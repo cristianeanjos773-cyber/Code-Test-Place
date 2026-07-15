@@ -289,7 +289,10 @@ MainModule.QuestFunctions = table.freeze({ --[[
         end
         CreateAndSpawnTrash() 
     end,
-    -- The reason why the parkourquest isnt here is because there are no individual things that should be supposed to be used to the player specifically, most of the parkour mechanics can be managed globally
+
+    ["ParkourQuest"] = function() end,
+
+    -- The reason why the parkourquest is empty is because there are no individual things that should be supposed to be used to the player specifically, most of the parkour mechanics can be managed globally
 })
 
 
@@ -413,5 +416,7 @@ function MainModule.ParkourEndPartTouched()
 end
 
 MainModule.MovePartParkour3()
+MainModule.SpinParkourEndPart()
+MainModule.ParkourEndPartTouched()
 
 return MainModule
