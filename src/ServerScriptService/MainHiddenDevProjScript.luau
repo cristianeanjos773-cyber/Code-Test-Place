@@ -345,7 +345,6 @@ function MainModule.OnTaskFinished(Player: Player, QuestName: string) -- everyti
     local QuestConfigTable = MainModule.QuestConfig[QuestName] :: {{[string]: any}}
     MainModule.PlayersInQuest[QuestName][Player] = nil 
     Player:SetAttribute("CurrentQuest", "")
-    MainModule.DisconnectPlayerConns(Player) 
     DataModuleManager.ManageLevel(Player, QuestConfigTable["XPReward"])
     DataModuleManager.ManageCoins(Player, QuestConfigTable["CoinsReward"])
 end 
