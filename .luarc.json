@@ -1,0 +1,8 @@
+{
+    "languageMode": "luau",
+    "ffiAllowed": false,
+    "requirePaths": [
+        "src/?",
+        "Packages/?"
+    ]
+}

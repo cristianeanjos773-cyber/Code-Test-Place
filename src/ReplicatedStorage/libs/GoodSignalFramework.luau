@@ -178,4 +178,3 @@ setmetatable(Signal, {
 })
 
 return Signal
-

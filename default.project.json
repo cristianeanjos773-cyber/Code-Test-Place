@@ -6,6 +6,9 @@
     "ReplicatedStorage": {
       "ReplicatedStorage": {
         "$path": "src/ReplicatedStorage"
+      },
+      "Packages": {
+        "$path": "Packages"
       }
     },
 
@@ -27,7 +30,6 @@
             "$path": "src/StarterCharacterScripts"
            }
         }
-
     },
 
     "StarterGui": {

@@ -1,6 +1,7 @@
 local DataTemplate = {
-    Coins = 0, 
-    Level = 0, 
+    ["Coins"] = 0, 
+    ["Level"] = 0, 
+    ["Inventory"] = {},
 }
 
 return DataTemplate 

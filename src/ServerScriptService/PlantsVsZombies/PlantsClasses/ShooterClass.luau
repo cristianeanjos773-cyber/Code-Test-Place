@@ -1,0 +1,3 @@
+local ShooterClass = {}
+
+return ShooterClass

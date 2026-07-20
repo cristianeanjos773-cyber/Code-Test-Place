@@ -324,6 +324,8 @@ function MainModule.QuestProximityPromptFunction() -- this function requests the
     -- its made like this so we dont need to make a new event for each proximity prompt task trigger, it scales better that way and makes developing faster 
     local QuestProximityPromptTag = CollectionService:GetTagged("QuestProximityPrompt")
 
+
+    
     for _, ProximityPrompts in QuestProximityPromptTag do 
          ProximityPrompts.Triggered:Connect(function(Player) 
             local QuestRequest = ProximityPrompts:GetAttribute("QuestRequest") :: string 
