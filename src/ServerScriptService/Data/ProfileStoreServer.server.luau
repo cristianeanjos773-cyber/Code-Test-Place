@@ -41,6 +41,7 @@ local function PlayerAdded(player: Player)
     
     if player.Parent == players then
         DataModuleManager.Profile[player] = playerprofile
+        DataModuleManager.SendDataToClient(player)
         InitialzeValues(player)
     else
         playerprofile:EndSession()

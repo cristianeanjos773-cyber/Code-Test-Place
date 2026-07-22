@@ -1,7 +1,6 @@
 local PlantsData = {
     
     ["Peashooter"] = {
-        ["PlantName"] = "Peashooter",
         ["Damage"] = 20, 
         ["HP"] = 100, 
         ["ShootCooldown"] = 3,
@@ -12,7 +11,7 @@ local PlantsData = {
 
     },
 
-    ["WallNut"] = {
+    ["Wallnut"] = {
         ["HP"] = 400,
         ["Defense"] = 150,
         ["Class"] = "Tank",
@@ -25,7 +24,8 @@ local PlantsData = {
         ["HP"] = 15, 
         ["SpawnSunCooldown"] = 10,
         ["Defense"] = 1,
-        ["Class"] = "Support", 
+        ["Class"] = "Support",
+        ["SunPrice"] = 50, 
         ["SpawnCooldown"] = 10, 
         ["ModelName"] = "Sunflower "
     }

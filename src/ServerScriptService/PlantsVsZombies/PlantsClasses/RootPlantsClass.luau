@@ -7,8 +7,12 @@ local PlantsVsZombiesFolder = ServerScriptServiceFolder.PlantsVsZombies :: Folde
 local PlantsDataFolder = PlantsVsZombiesFolder:FindFirstChild("PVZData") :: Folder
 
 local PlantsClassesData = require(script.Parent.PlantsClassesData)
-local PVZGameplayMainModule = require(PlantsVsZombiesFolder:FindFirstChild("PlantsMainModule"))
+local PvZPlayerDataService = require(PlantsVsZombiesFolder:FindFirstChild("PvZPlayerDataService"))
 local PlantsData = require(PlantsDataFolder:FindFirstChild("PlantsData"))
+local Services = script.Parent.Parent.Services
+
+local CooldownService = require(Services.CooldownService)
+local SunPlayerService = require(Services.SunPlayerService)
 
 local PlantsClass = {}
 PlantsClass.__index = PlantsClass 
@@ -19,8 +23,15 @@ function PlantsClass.new(StatsTable: {[string]: string | number})
         warn(`Stats table doesnt exist or is not a table, check the statstable argument, typeof: {StatsTable}`)
         return 
     end
-
     local self = setmetatable({}, PlantsClass)
+
+    for PropertyName, PropertyValue in StatsTable do 
+        if not self[PropertyName] then
+            continue 
+        end
+        self[PropertyName] = PropertyValue 
+    end 
+
     print(self, StatsTable)
     return self 
 
@@ -29,7 +40,7 @@ end
 function PlantsClass.IsAShooter(PlantName: string) : boolean
     local PlantClassName = PlantsData[PlantName]["Class"] :: string 
     
-    if PlantsClassesData[PlantClassName]["CanBePlacedInLine"] then 
+    if not PlantsClassesData[PlantClassName]["CanBePlacedInLine"] then 
         return true 
     else
         return false
@@ -38,7 +49,7 @@ function PlantsClass.IsAShooter(PlantName: string) : boolean
 end
 
 function PlantsClass:Spawn(Player: Player, Plant: string, SpawnPart: Part) 
-    local PlayerInCooldownTable = PVZGameplayMainModule.PlayersInCooldown :: {[Player]: {[string]: number}}
+    local PlayerInCooldownTable = CooldownService.ObjectsInCooldown 
 
     if not PlayerInCooldownTable[Player] then
         PlayerInCooldownTable[Player] = {}
@@ -46,7 +57,7 @@ function PlantsClass:Spawn(Player: Player, Plant: string, SpawnPart: Part)
 
     local PlayerKey = PlayerInCooldownTable[Player] :: {}
     local SpawnPartSpawnFolder = SpawnPart.Parent :: Folder
-    local IsAShooter = PlantsClass.IsAShooter(Plant) :: boolean 
+    local IsAShooter = PlantsClass.IsAShooter(Plant) :: boolean
 
     if not IsAShooter and SpawnPartSpawnFolder.Name == "ShootersSpawn" then 
         return  
@@ -64,12 +75,14 @@ function PlantsClass:Spawn(Player: Player, Plant: string, SpawnPart: Part)
     end
 
     local PlantModelClone = PlantModel:Clone()
-    local PlayerFinalCooldown = os.clock() + PlantCooldownDuration :: number -- that calculates the playercooldown final number, adding Current Time with The plant cooldown (ex: 30)
+    local PlantSunCost = PlantsData[Plant]["SunPrice"] 
 
-    PlayerKey[Plant] = PlayerFinalCooldown
     PlantModelClone.Parent = workspace  
     PlantModelClone:MoveTo(SpawnPart.Position)
-    
+    CooldownService.AddObjectInCooldownTable(Player, Plant, PlantCooldownDuration)
+    CooldownService.StartCooldown(Player, Plant, PlantCooldownDuration)
+    SunPlayerService.ManagePlayerSuns(Player, -PlantSunCost)
+
 end
 
 
