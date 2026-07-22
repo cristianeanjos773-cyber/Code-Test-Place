@@ -1,63 +1,98 @@
 --!strict 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage :: Folder 
+local ServerStorage = game:GetService("ServerStorage")
+local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage 
 local PvZ = script.Parent
 
+local SunPlayerService = require(PvZ.Services.SunPlayerService)
+local SpawnService = require(PvZ.Services.SpawnService)
 local PlantsClass = require(PvZ.PlantsClasses.RootPlantsClass)
-local PlantFactory = require(PvZ.PlantsClasses.PlantFactory)
+local OOPObjectFactory = require(PvZ.PlantsClasses.OOPObjectFactory)
 local PlantsData = require(PvZ.PVZData.PlantsData)
 local CooldownService = require(PvZ.Services.CooldownService)
+local PlantsClassesData = require(script.Parent.PlantsClasses.PlantsClassesData)
 local Remotes = ReplicatedStorageFolder.Remotes 
 local RequestPlantSpawn = Remotes.RequestPlantSpawn :: RemoteEvent
 local SpawnFailedWarning = Remotes.SpawnFailedWarning :: RemoteEvent
-
 local PlantsMainModule = {}
+ 
 
-function PlantsMainModule.SpawnPlant() 
-
+function PlantsMainModule.ReturnObjectClass(PlantName: string): string 
+    local PlantClassName = PlantsData[PlantName]["Class"] :: string 
+    return PlantClassName
 end 
 
-function PlantsMainModule.CheckClass(): boolean 
+
+function PlantsMainModule.ValidateSun(Player: Player, PlantRequested): boolean  
+    local PlantKey = PlantsData[PlantRequested] :: {[string]: string | number}
+    local leaderstats = Player:FindFirstChild("leaderstats") :: Folder
+    local PlayerSuns = leaderstats:FindFirstChild("Suns") :: IntValue
+    local PlantPrice = PlantKey["SunPrice"] :: number 
     
+    if  PlayerSuns.Value > PlantPrice then 
+        return true
+    else
+        return false   
+    end
+
 end 
 
-function PlantsMainModule.ValidatePlantSpawnRequest(SpawnPart: Part) 
+
+function PlantsMainModule.SpawnPlant(Player: Player, PlantRequested: string, SpawnPart: Part) 
+   
+    local CheckClass = PlantsMainModule.ReturnObjectClass(PlantRequested)
+    local SpawnPartFolderName = SpawnPart.Parent.Name  
+    local FailString = `You can't place Plants from class: {CheckClass} on {SpawnPartFolderName} parts!`
+
+    if CheckClass == "Shooter" and SpawnPartFolderName ~= "NonShooterSpawns" then 
+        SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
+        return 
+    end 
+
+    if CheckClass ~= "Shooter" and SpawnPartFolderName == "ShootersSpawn" then 
+        SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
+        return 
+    end 
+
+    local IsCooldownOn = CooldownService.IsCooldownOn(Player, PlantRequested) :: boolean 
+    local PlayerCooldown = CooldownService.ObjectsInCooldown[Player][PlantRequested] :: number
+    
+    local FormattedTime =  string.format("%.1f", PlayerCooldown)
+    local CooldownFaileString = `You should wait more {FormattedTime} to plant {PlantRequested}!`
+    
+
+    if IsCooldownOn then 
+        SpawnFailedWarning:FireClient(Player, {["Text"] = CooldownFaileString, ["Color"] = Color3.fromRGB(255, 0, 0)})
+        return
+    end
+
+    local HasEnoughSuns = PlantsMainModule.ValidateSun(Player, PlantRequested)
+    local PlantCooldown = PlantsData[PlantRequested]["SpawnCooldown"] :: number 
+    local SunCost = PlantsData[PlantRequested]["SunPrice"] :: number 
+
+    if not HasEnoughSuns then
+        return
+    end
+
+    SpawnService.SpawnObject(PlantRequested, SpawnPart)
+    CooldownService.AddObjectInCooldownTable(Player, PlantRequested, PlantCooldown)
+    CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
+    SunPlayerService.ManagePlayerSuns(Player, -SunCost)
+
+end
+
+
+
+function PlantsMainModule.RequestPlantSpawn(SpawnPart: Part) 
     
     if not SpawnPart or not SpawnPart:IsA("Part") then
         return
     end
 
     RequestPlantSpawn.OnServerEvent:Connect(function(Player: Player, PlantRequested: string)
-        local PlantKey = PlantsData[PlantRequested] :: {[string]: string | number}
-        local leaderstats = Player:FindFirstChild("leaderstats") :: Folder
-        local PlayerSuns = leaderstats:FindFirstChild("Suns") :: IntValue
-        local PlantPrice = PlantKey["SunPrice"] :: number 
-        
-        local CurrentTime = os.clock()
-
-        if PlantPrice > PlayerSuns.Value then 
-            return  
-        end
-
-        if not CooldownService.ObjectsInCooldown[Player] then
-            CooldownService.ObjectsInCooldown[Player] = {}
-        end
-
-        local PlayerCooldownKey = CooldownService.ObjectsInCooldown[Player]  
-
-        warn("TYPEOF", typeof(PlantRequested))
-        if CooldownService.IsCooldownOn(Player, PlantRequested) then
-            local TimeLeft =  PlayerCooldownKey[PlantRequested] - CurrentTime 
-            local FormattedTime = string.format("%.1f", TimeLeft)
-            local TextConfig = {
-                ["TextString"] = `You need to wait more {FormattedTime} to be able to plant this plant!`, 
-                ["TextColor"] = Color3.fromRGB(255, 0, 0)
-            }
-            SpawnFailedWarning:FireClient(Player, TextConfig)
-            return
-        end
-        PlantsClass:Spawn(Player, PlantRequested, SpawnPart)
+        PlantsMainModule.SpawnPlant(Player, PlantRequested, SpawnPart)
     end)
+
 end 
 
 --[[TODO:

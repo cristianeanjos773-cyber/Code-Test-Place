@@ -6,8 +6,6 @@ export type PlantsOwnerTable = {
     [Player]: {[string]: Model} 
 }
 
-
-
 export type PlayerCooldownKey = {
     [string]: number
 }

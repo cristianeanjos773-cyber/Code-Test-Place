@@ -1,7 +1,6 @@
 local PlantsClassFolder = script.Parent
 local RootPlantsClass = require(PlantsClassFolder.RootPlantsClass)
 local PVZFolder = script.Parent.Parent
-local PVZPlantaDataService = require(PVZFolder.PVZPlantDataService)
 
 local SupportClass = {}
 setmetatable(SupportClass, {__index = RootPlantsClass})

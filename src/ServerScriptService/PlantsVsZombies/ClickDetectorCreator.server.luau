@@ -17,7 +17,7 @@ local function InsertClickDet()
 
             ClickDetector.MouseClick:Connect(function(Player: Player)
                 InventoryPopUp:FireClient(Player)
-                PlantsMainModule.ValidatePlantSpawnRequest(ClickDetector.Parent)
+                PlantsMainModule.RequestPlantSpawn(ClickDetector.Parent)
             end)
 
         end
