@@ -44,39 +44,44 @@ function PlantsMainModule.SpawnPlant(Player: Player, PlantRequested: string, Spa
     local SpawnPartFolderName = SpawnPart.Parent.Name  
     local FailString = `You can't place Plants from class: {CheckClass} on {SpawnPartFolderName} parts!`
 
-    if CheckClass == "Shooter" and SpawnPartFolderName ~= "NonShooterSpawns" then 
-        SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
-        return 
-    end 
-
-    if CheckClass ~= "Shooter" and SpawnPartFolderName == "ShootersSpawn" then 
-        SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
-        return 
-    end 
-
     local IsCooldownOn = CooldownService.IsCooldownOn(Player, PlantRequested) :: boolean 
     local PlayerCooldown = CooldownService.ObjectsInCooldown[Player][PlantRequested] :: number
     
     local FormattedTime =  string.format("%.1f", PlayerCooldown)
     local CooldownFaileString = `You should wait more {FormattedTime} to plant {PlantRequested}!`
-    
-
-    if IsCooldownOn then 
-        SpawnFailedWarning:FireClient(Player, {["Text"] = CooldownFaileString, ["Color"] = Color3.fromRGB(255, 0, 0)})
-        return
-    end
 
     local HasEnoughSuns = PlantsMainModule.ValidateSun(Player, PlantRequested)
     local PlantCooldown = PlantsData[PlantRequested]["SpawnCooldown"] :: number 
     local SunCost = PlantsData[PlantRequested]["SunPrice"] :: number 
+    local TagString = "Plant"
 
+
+    if CheckClass == "Shooter" and SpawnPartFolderName == "NonShooterSpawns" then 
+        SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
+        warn("FIRST COND")
+        return 
+    end 
+
+    if CheckClass ~= "Shooter" and SpawnPartFolderName == "ShootersSpawn" then 
+        SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
+        warn("SECOND COND")
+        return 
+    end 
+
+    if IsCooldownOn then 
+        SpawnFailedWarning:FireClient(Player, {["Text"] = CooldownFaileString, ["Color"] = Color3.fromRGB(255, 0, 0)})
+        warn("FAILED BECAUSE PLAYER IS ON COOLDOWN")
+        return
+    end
+   
     if not HasEnoughSuns then
         return
     end
 
-    SpawnService.SpawnObject(PlantRequested, SpawnPart)
+    SpawnService.SpawnObject(PlantRequested, SpawnPart, TagString)
     CooldownService.AddObjectInCooldownTable(Player, PlantRequested, PlantCooldown)
     CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
+    warn(CooldownService.ObjectsInCooldown)
     SunPlayerService.ManagePlayerSuns(Player, -SunCost)
 
 end
@@ -94,9 +99,5 @@ function PlantsMainModule.RequestPlantSpawn(SpawnPart: Part)
     end)
 
 end 
-
---[[TODO:
-Colocar toda a logica de plantsclass:Spawn() nesse modulo de forma segura, separando as responsabilidades por funçao e melhorando esse codigo. 
-]]
 
 return PlantsMainModule

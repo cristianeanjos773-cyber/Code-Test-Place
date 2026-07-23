@@ -1,31 +1,42 @@
+--!strict 
 local PlantsClassFolder = script.Parent
-local RootPlantsClass = require(PlantsClassFolder.RootPlantsClass)
 local PVZFolder = script.Parent.Parent
+--local PVZDataFolder = PVZFolder.PVZData
+
+local Services = PVZFolder.Services
+--local PlantsData = require(PVZDataFolder.PlantsData)
+local RootPlantsClass = require(PlantsClassFolder.RootPlantsClass)
+--local PVZObjectDataService = require(Services.PVZObjectDataService)
+
+local CooldownService = require(Services.CooldownService)
 
 local SupportClass = {}
+
 setmetatable(SupportClass, {__index = RootPlantsClass})
 SupportClass.__index = SupportClass
 
-export type Support = {
-    ["HP"]: number, 
+type RootPlant = RootPlantsClass.RootPlant 
+
+export type Support = typeof(setmetatable({} ::  RootPlant & {
     ["SpawnSunCooldown"]: number,
-    ["Defense"]: number,
-    ["Class"]: string,
-    ["SunPrice"]: number, 
-    ["SpawnCooldown"]: number, 
-    ["ModelName"]: string,
-}
+    ["ModelInstance"]: Model,
+    ["GenerateSun"]: (self: Support) -> (), 
+    ["Initialize"]: (self: Support) -> (), 
+},
+SupportClass
+))
 
 function SupportClass.new(SupportPlantStats: Support): Support  
-    local self = RootPlantsClass.new(SupportPlantStats)
+    local self = RootPlantsClass.new(SupportPlantStats) :: Support
     setmetatable(self, SupportClass)
-    return self :: Support
+    return self 
 end
 
 local PVZWorkspace = workspace.PlantsVsZombies :: Folder
 local SunPartsFolder = PVZWorkspace:FindFirstChild("SunParts") :: Folder
 
 function SupportClass.ApplySunImpulse(SunPart: Part)
+    warn("called apply impulse")
     local ForceDirection = Vector3.new(0, 15, 0)
     local SunPartAssemblyMass = SunPart.AssemblyMass
     SunPart:ApplyImpulse(ForceDirection * SunPartAssemblyMass)
@@ -39,12 +50,12 @@ function SupportClass.CreatePhysicalSun(SunSpawnPosition: Vector3)
     SunPart.Name = "Sun"
     SunPart.Color = Color3.fromRGB(251, 255, 0)
     SunPart:AddTag("SunPartsTag")
-    SunPart.Size = Vector3.new(5, 5, 5)
+    SunPart.Size = Vector3.new(1, 1, 1)
     SunPart.Shape = Enum.PartType.Ball
     SunPart.Position = SunSpawnPosition
     SunPart.Parent = SunPartsFolder
     SupportClass.ApplySunImpulse(SunPart)
-
+    warn("Called create phyasdasd")
     --[[task.defer(function()
         SupportClass.ApplySunImpulse(SunPart)
     end)]]
@@ -61,17 +72,51 @@ function SupportClass.CreatePhysicalSun(SunSpawnPosition: Vector3)
 
 end 
 
-function SupportClass:GenerateSun(SupportPlantModel: Model)
-    local CenterFace = SupportPlantModel:FindFirstChild("CenterFace") :: BasePart
+function SupportClass:GenerateSun()
+    warn("generate sun function called")
+    local self = self :: Support 
+    local SpawnSunCooldown = self["SpawnSunCooldown"] :: number
+    local PlantModelInstance = self["ModelInstance"] :: Model   
+    warn(PlantModelInstance, "PLANTMODEL INSTANCE!")
+    local CenterFace = PlantModelInstance:FindFirstChild("CenterFace") :: UnionOperation
     local CenterFacePos = CenterFace.Position
     local SunSpawnPosition = CenterFacePos + Vector3.new(0, 4, 0)
-    local SpawnSunCooldown = self["SpawnSunCooldown"] :: number
-    SupportClass.CreatePhysicalSun(SunSpawnPosition)
-
+    
     if not SpawnSunCooldown or typeof(SpawnSunCooldown) ~= "number" then 
          warn(`[PVZPlayerDataService]: check the cooldown number argument, the type:{SpawnSunCooldown}`)
          return
-    end 
+    end
+
+    SupportClass.CreatePhysicalSun(SunSpawnPosition)
+    warn("Called create physucak syb")
+
+end 
+
+function SupportClass:Initialize() 
+    local self = self :: Support
+    local SpawnSunCooldown = self["SpawnSunCooldown"]
+    warn(self, "plant init has been called")
+
+    task.spawn(function()
+        
+        while self:IsAlive() do
+            
+            
+
+            CooldownService.AddObjectInCooldownTable(self, "GenerateSun", SpawnSunCooldown)
+
+            if CooldownService.IsCooldownOn(self, "GenerateSun") then 
+                task.wait(1)
+                continue  
+            end
+
+            self:GenerateSun()
+            CooldownService.StartCooldown(self, "GenerateSun", SpawnSunCooldown)
+
+         end 
+
+    end)
+
 end 
 
 return SupportClass 

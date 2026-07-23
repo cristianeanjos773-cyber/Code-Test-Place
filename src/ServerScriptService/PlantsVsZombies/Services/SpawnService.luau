@@ -6,24 +6,26 @@ local PVZFolder = SSSFolder.PlantsVsZombies
 local PVZDataFolder = PVZFolder.PVZData
 local PlantsDataModule = require(PVZDataFolder.PlantsData)
 local ZombiesDataModule = require(PVZDataFolder.ZombiesData)
-local PVZObjectDataService =  require(PVZFolder.PVZObjectDataService)
+local PVZObjectDataService =  require(PVZFolder.Services.PVZObjectDataService)
 
 local SpawnService = {}
 
 
-function SpawnService.SetUpModel(ObjectModel: Model, SpawnPart: Part) 
+function SpawnService.SetUpModel(ObjectModel: Model, SpawnPart: Part, TagString: string) 
     
     if not ObjectModel then
         warn("objectmodel argument not passed") 
         return 
     end
-    
+
     local ObjModelClone = ObjectModel:Clone()
     local PlantsVsZombiesFolder = workspace:FindFirstChild("PlantsVsZombies") :: Folder
     local PlantsFolder = PlantsVsZombiesFolder:FindFirstChild("PlantsFolder") :: Folder
 
-    ObjModelClone.Parent = PlantsFolder  
+    ObjModelClone.Parent = PlantsFolder
+    ObjModelClone:AddTag(TagString)  
     ObjModelClone:MoveTo(SpawnPart.Position)
+
     
     return ObjModelClone 
 
@@ -42,22 +44,23 @@ function SpawnService.FindObjectModel(ObjectRequested: string): Model | nil
 end
 
 
-function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part) 
+function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagString: string) 
     local ObjectModel = SpawnService.FindObjectModel(ObjectRequested)
-    local Class
+    --local Class
+    local CloneModule = SpawnService.SetUpModel(ObjectModel, SpawnPart, TagString)
 
-    if not ObjectModel:HasTag("Plant") and not ObjectModel:HasTag("Zombie") then
-        return
-    end
-
-    if ObjectModel:HasTag("Plant") then 
+    --[[if CloneModule:HasTag("Plant") then 
         Class = PlantsDataModule[ObjectRequested]["Class"]
     else
         Class = ZombiesDataModule[ObjectRequested]["Class"]
-    end 
+    end ]]
 
-    local CloneModule = SpawnService.SetUpModel(ObjectModel, SpawnPart)
-    PVZObjectDataService.ConnectOOPModel(CloneModule, Class)
+    if not CloneModule:HasTag("Plant") and not CloneModule:HasTag("Zombie") then
+        return
+    end
+
+    PVZObjectDataService.ConnectOOPModel(CloneModule, ObjectRequested)
+    warn("MY OBJ", PVZObjectDataService.GetObject(CloneModule))
     
 end 
 

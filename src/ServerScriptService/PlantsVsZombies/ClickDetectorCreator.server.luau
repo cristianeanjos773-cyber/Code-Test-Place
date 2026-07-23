@@ -12,7 +12,6 @@ local function InsertClickDet()
         if Parts:IsA("BasePart") then 
             
             local ClickDetector = Instance.new("ClickDetector")
-            warn(ClickDetector, "life sing")
             ClickDetector.Parent = Parts
 
             ClickDetector.MouseClick:Connect(function(Player: Player)

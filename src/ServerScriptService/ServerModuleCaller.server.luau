@@ -11,7 +11,6 @@ local function InitializeServerModules()
 
     for _, ModuleScript in ServerScriptService:GetDescendants() do 
         if ModuleScript:IsA("ModuleScript") then 
-            print(`[GuiModuleInitializer]: Found ModuleScript: {ModuleScript.Name}`) 
             table.insert(ModuleScriptArray, ModuleScript) 
         end
     end
