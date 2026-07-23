@@ -59,6 +59,7 @@ function PVZUIService.OrganizeInvData()
         local Inventory = PlayerData["Inventory"] :: Inventory
         local Coins = PlayerData["Coins"] :: number 
         local Level = PlayerData["Level"] :: number 
+        warn("invetory signal has been received by client!")
         PVZUIService.SetUpInventory(Inventory)
     end)
 end 
@@ -70,7 +71,7 @@ function PVZUIService.SetUpInventory(Inventory: Inventory)
         local NewSpawnButton = NewImageTemplate:WaitForChild("SpawnTemplate") :: TextButton
         local PlantSunPrice = PlantDataHolders["PlantSunPrices"][Keys] :: string  
         NewImageTemplate.Parent = FrameHolder 
-        NewImageTemplate.Visible = true 
+    NewImageTemplate.Visible = true 
         NewImageTemplate.Image = PlantDataHolders.PlantImages[Keys] :: string
         NewSpawnButton.Text = `Spawn {Inventory[Keys]} for {PlantSunPrice} Suns`
         RequestPlantSpawnFunc(NewSpawnButton, Keys)
@@ -93,5 +94,6 @@ PVZUIService.OrganizeInvData()
 PVZUIService.SpawnFailedReceiver() 
 PVZUIService.HandleSuns()
 PVZUIService.InventoryVis()
+warn("PVZUISERVICE LIFE SIGN?")
 
 return PVZUIService 

@@ -29,7 +29,7 @@ function PlantsMainModule.ValidateSun(Player: Player, PlantRequested): boolean
     local PlayerSuns = leaderstats:FindFirstChild("Suns") :: IntValue
     local PlantPrice = PlantKey["SunPrice"] :: number 
     
-    if  PlayerSuns.Value > PlantPrice then 
+    if  PlayerSuns.Value >= PlantPrice then 
         return true
     else
         return false   

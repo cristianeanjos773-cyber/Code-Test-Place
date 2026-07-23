@@ -40,7 +40,7 @@ function PVZShopService.OnPlantRequest()
             return 
         end
 
-        if PlantPrice > PlayerCoins then 
+        if PlantPrice >= PlayerCoins then 
             PurchaseStatusWarner:FireClient(Player, `You dont have enough coins to buy: {PlantRequest}!`)
             return 
         end 

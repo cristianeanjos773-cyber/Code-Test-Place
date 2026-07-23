@@ -47,7 +47,7 @@ end
 
 
 Players.PlayerAdded:Connect(function(Player: Player)
-    CooldownService.ObjectsInCooldown[Player] = {}
+    CooldownService.ObjectsInCooldown[Player] = {} :: CooldownKey
 end)
 
 return CooldownService

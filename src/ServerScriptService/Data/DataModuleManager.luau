@@ -36,6 +36,7 @@ function DataModuleManager.ManageLevel(Player: Player, amount: number)
 end
 
 function DataModuleManager.SendDataToClient(Player: Player) 
+    warn("CAALED")
     InventoryDataClientSender:FireClient(Player, DataModuleManager.Profile[Player].Data)
 end 
 
