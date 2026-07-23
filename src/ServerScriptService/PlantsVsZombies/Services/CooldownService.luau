@@ -11,31 +11,8 @@ CooldownService.ObjectsInCooldown = {}
 
 setmetatable(CooldownService.ObjectsInCooldown, {__mode = "k"})
 
-function CooldownService.AddObjectInCooldownTable(Object: Player | string | {}, Action: string, CooldownNumber: number)
-    
-    warn(CooldownService.ObjectsInCooldown, Object, Action, CooldownNumber)
-    
-    if not CooldownService.ObjectsInCooldown[Object] then
-        warn("fgsefwesfesfe")
-        CooldownService.ObjectsInCooldown[Object] = {} 
-    end
 
-    if not CooldownNumber or typeof(CooldownNumber) ~= "number" then 
-        warn(`[CooldownService]: check the cooldown number argument, the type:{CooldownNumber}`)
-        return
-    end
-
-    
-    local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] :: CooldownKey 
-    --local ActionInCooldown = ObjectInCooldown[Action]
-
-    if not ObjectInCooldown[Action] then 
-        ObjectInCooldown[Action] = CooldownNumber or 0 
-    end
-
-end
-
-function CooldownService.IsCooldownOn(Object: Player | string | {}, Action: string): boolean  
+function CooldownService.IsCooldownOn(Object: CooldownKey, Action: string): boolean  
     local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] :: CooldownKey 
 
     if not ObjectInCooldown[Action] then 
@@ -54,18 +31,20 @@ function CooldownService.IsCooldownOn(Object: Player | string | {}, Action: stri
 
 end 
 
-function CooldownService.StartCooldown(Object: string | Player | {}, Action: string, CooldownNumber: number)
+function CooldownService.StartCooldown(Object: CooldownKey, Action: string, CooldownNumber: number)
     
     local ObjectFinalCooldown = os.clock() + CooldownNumber :: number
     local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] :: CooldownKey  
     
     if not ObjectInCooldown then 
-        return
+        ObjectInCooldown = {}
+        CooldownService.ObjectsInCooldown[Object] = ObjectInCooldown
     end
 
     ObjectInCooldown[Action] = ObjectFinalCooldown 
 
 end
+
 
 Players.PlayerAdded:Connect(function(Player: Player)
     CooldownService.ObjectsInCooldown[Player] = {}

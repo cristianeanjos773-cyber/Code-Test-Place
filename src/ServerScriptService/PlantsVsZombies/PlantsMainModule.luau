@@ -79,7 +79,6 @@ function PlantsMainModule.SpawnPlant(Player: Player, PlantRequested: string, Spa
     end
 
     SpawnService.SpawnObject(PlantRequested, SpawnPart, TagString)
-    CooldownService.AddObjectInCooldownTable(Player, PlantRequested, PlantCooldown)
     CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
     warn(CooldownService.ObjectsInCooldown)
     SunPlayerService.ManagePlayerSuns(Player, -SunCost)

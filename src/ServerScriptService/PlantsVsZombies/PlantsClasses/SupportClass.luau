@@ -95,15 +95,13 @@ end
 function SupportClass:Initialize() 
     local self = self :: Support
     local SpawnSunCooldown = self["SpawnSunCooldown"]
+    CooldownService.StartCooldown(self, "GenerateSun", SpawnSunCooldown)
+
     warn(self, "plant init has been called")
 
     task.spawn(function()
         
         while self:IsAlive() do
-            
-            
-
-            CooldownService.AddObjectInCooldownTable(self, "GenerateSun", SpawnSunCooldown)
 
             if CooldownService.IsCooldownOn(self, "GenerateSun") then 
                 task.wait(1)
@@ -111,7 +109,6 @@ function SupportClass:Initialize()
             end
 
             self:GenerateSun()
-            CooldownService.StartCooldown(self, "GenerateSun", SpawnSunCooldown)
 
          end 
 
