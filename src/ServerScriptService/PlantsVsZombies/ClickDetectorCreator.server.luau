@@ -3,7 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
 local Remotes = ReplicatedStorageFolder.Remotes
 local InventoryPopUp = Remotes:FindFirstChild("InventoryPopUp") :: RemoteEvent 
-local PlantsMainModule = require(script.Parent.PlantsMainModule)
+local GameplayMainModule = require(script.Parent.GameplayMainModule)
 
 local function InsertClickDet() 
     warn("ffff")
@@ -16,7 +16,7 @@ local function InsertClickDet()
 
             ClickDetector.MouseClick:Connect(function(Player: Player)
                 InventoryPopUp:FireClient(Player)
-                PlantsMainModule.RequestPlantSpawn(ClickDetector.Parent)
+                GameplayMainModule.RequestPlantSpawn(ClickDetector.Parent)
             end)
 
         end

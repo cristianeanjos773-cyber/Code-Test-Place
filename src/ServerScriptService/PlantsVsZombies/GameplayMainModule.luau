@@ -7,23 +7,25 @@ local PvZ = script.Parent
 local SunPlayerService = require(PvZ.Services.SunPlayerService)
 local SpawnService = require(PvZ.Services.SpawnService)
 local PlantsClass = require(PvZ.PlantsClasses.RootPlantsClass)
-local OOPObjectFactory = require(PvZ.PlantsClasses.OOPObjectFactory)
+local OOPFolder = PvZ.OOP
+local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
 local PlantsData = require(PvZ.PVZData.PlantsData)
 local CooldownService = require(PvZ.Services.CooldownService)
 local PlantsClassesData = require(script.Parent.PlantsClasses.PlantsClassesData)
 local Remotes = ReplicatedStorageFolder.Remotes 
 local RequestPlantSpawn = Remotes.RequestPlantSpawn :: RemoteEvent
 local SpawnFailedWarning = Remotes.SpawnFailedWarning :: RemoteEvent
-local PlantsMainModule = {}
+
+local GameplayMainModule = {}
  
 
-function PlantsMainModule.ReturnObjectClass(PlantName: string): string 
+function GameplayMainModule.ReturnObjectClass(PlantName: string): string 
     local PlantClassName = PlantsData[PlantName]["Class"] :: string 
     return PlantClassName
 end 
 
 
-function PlantsMainModule.ValidateSun(Player: Player, PlantRequested): boolean  
+function GameplayMainModule.ValidateSun(Player: Player, PlantRequested): boolean  
     local PlantKey = PlantsData[PlantRequested] :: {[string]: string | number}
     local leaderstats = Player:FindFirstChild("leaderstats") :: Folder
     local PlayerSuns = leaderstats:FindFirstChild("Suns") :: IntValue
@@ -38,9 +40,9 @@ function PlantsMainModule.ValidateSun(Player: Player, PlantRequested): boolean
 end 
 
 
-function PlantsMainModule.SpawnPlant(Player: Player, PlantRequested: string, SpawnPart: Part) 
+function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, SpawnPart: Part) 
    
-    local CheckClass = PlantsMainModule.ReturnObjectClass(PlantRequested)
+    local CheckClass = GameplayMainModule.ReturnObjectClass(PlantRequested)
     local SpawnPartFolderName = SpawnPart.Parent.Name  
     local FailString = `You can't place Plants from class: {CheckClass} on {SpawnPartFolderName} parts!`
 
@@ -50,7 +52,7 @@ function PlantsMainModule.SpawnPlant(Player: Player, PlantRequested: string, Spa
     local FormattedTime =  string.format("%.1f", PlayerCooldown)
     local CooldownFaileString = `You should wait more {FormattedTime} to plant {PlantRequested}!`
 
-    local HasEnoughSuns = PlantsMainModule.ValidateSun(Player, PlantRequested)
+    local HasEnoughSuns = GameplayMainModule.ValidateSun(Player, PlantRequested)
     local PlantCooldown = PlantsData[PlantRequested]["SpawnCooldown"] :: number 
     local SunCost = PlantsData[PlantRequested]["SunPrice"] :: number 
     local TagString = "Plant"
@@ -87,16 +89,16 @@ end
 
 
 
-function PlantsMainModule.RequestPlantSpawn(SpawnPart: Part) 
+function GameplayMainModule.RequestPlantSpawn(SpawnPart: Part) 
     
     if not SpawnPart or not SpawnPart:IsA("Part") then
         return
     end
 
     RequestPlantSpawn.OnServerEvent:Connect(function(Player: Player, PlantRequested: string)
-        PlantsMainModule.SpawnPlant(Player, PlantRequested, SpawnPart)
+        GameplayMainModule.SpawnPlant(Player, PlantRequested, SpawnPart)
     end)
 
 end 
 
-return PlantsMainModule
+return GameplayMainModule

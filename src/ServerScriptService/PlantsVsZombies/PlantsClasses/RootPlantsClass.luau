@@ -1,4 +1,5 @@
 --!strict 
+local PVZObjectDataService = require(script.Parent.Parent.Services.PVZObjectDataService)
 local PlantsClass = {}
 
 PlantsClass.__index = PlantsClass 
@@ -9,7 +10,11 @@ export type RootPlant = typeof(setmetatable({} :: {
     ["Defense"]: number,
     ["SpawnCooldown"]: number,
     ["SunPrice"]: number,
-    ["ModelName"]: string   
+    ["ModelName"]: string,
+    ["IsAlive"]: (self: self) -> (),
+    ["TakeDamage"]: (self: self) -> (),
+    ["HealPlant"]: (self: self) -> (),  
+    ["PlantDie"]: (self: self) -> ()
     },  
     PlantsClass
 ))
@@ -59,6 +64,12 @@ function PlantsClass:TakeDamage(Damage: number)
 end
 
 function PlantsClass:PlantDie() 
+    local self = self :: RootPlant
+    local PlantModel = PVZObjectDataService.GetModel(self) 
+
+    PlantModel:Destroy()
+    PVZObjectDataService.DisconnectOOP(self)
+
 
 end 
 

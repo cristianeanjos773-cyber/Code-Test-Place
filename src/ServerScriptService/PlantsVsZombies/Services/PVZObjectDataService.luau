@@ -4,8 +4,8 @@ NOTE: this is a module which'll be used to connect Models (PlantsModules, Zombie
 
 
 local PVZFolder  = script.Parent.Parent
-local PlantsClasses = PVZFolder.PlantsClasses
-local OOPObjectFactory = require(PlantsClasses.OOPObjectFactory)
+local OOPFolder = PVZFolder.OOP
+local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
 
 local PVZObjectDataService = {}
 
@@ -61,6 +61,20 @@ end
 function PVZObjectDataService.GetModel(OOPObject: {}): Model? 
     return OOPObject["ModelInstance"] :: Model?  
 end
+
+function PVZObjectDataService.DisconnectOOP(OOPObjectKey: {}) 
+    
+    if not OOPObjectKey then 
+        return
+    end
+    
+    local OOPObject = PVZObjectDataService.GetObject(OOPObjectKey["ModelInstance"])
+    
+    if not OOPObject then 
+        return
+    end 
+
+end 
 
 function PVZObjectDataService.ConnectOOPModel(OOPObjectModel: Model, ObjectOOPRequest: string) 
 
