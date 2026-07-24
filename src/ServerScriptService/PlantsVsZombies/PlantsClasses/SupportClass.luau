@@ -59,9 +59,9 @@ local RandomGenerator = Random.new()
 
 
 function SupportClass.ApplySunImpulse(SunPart: Part)
-    local DirX = RandomGenerator:NextNumber(-1, 1)
-    local DirY = RandomGenerator:NextNumber(15, 25)
-    local DirZ = RandomGenerator:NextNumber(-2, 2)
+    local DirX = RandomGenerator:NextNumber(4, 15)
+    local DirY = RandomGenerator:NextNumber(20, 25)
+    local DirZ = RandomGenerator:NextNumber(0, 10)
     local ForceDirection = Vector3.new(DirX, DirY, DirZ)
     local SunPartAssemblyMass = SunPart.AssemblyMass
     SunPart:ApplyImpulse(ForceDirection * SunPartAssemblyMass)
@@ -121,15 +121,44 @@ function SupportClass.OnSunGrabRequest(SunGrabber: ClickDetector, SunPart: Part)
 
 end 
 
+local GrassPartName = "Grass"
+
+function SupportClass.AnchorPhysicalSun(SunPart: Part)
+    local TouchedConn
+    
+    TouchedConn = SunPart.Touched:Connect(function(OtherPart: BasePart)
+        
+        if OtherPart.Name ~= GrassPartName then 
+            return 
+        end
+        
+        if SunPart.Anchored then 
+            return 
+        end
+
+        SunPart.Anchored = true 
+        TouchedConn:Disconnect()
+        TouchedConn = nil
+         
+    end)
+    --[[
+        As the sun part falls in the grass part, it gets anchored. we use a :Disconnect() to avoid using memory in an useless way. 
+        if the sunPart had already fallen, keeping the .Touched listener would be a waste of resources. 
+    ]]
+end 
+
 function SupportClass.CreatePhysicalSun(SunSpawnPosition: Vector3) 
     local SunPart = Instance.new("Part")
     local ClickDetector = Instance.new("ClickDetector")
     
-    SupportClass.SetUpPhyisicalSunProperties(SunPart)
     SunPart:AddTag("SunPartsTag")
     SunPart.Position = SunSpawnPosition
     SunPart.Parent = SunPartsFolder
+
+    SupportClass.SetUpPhyisicalSunProperties(SunPart)
     SupportClass.CreatePointLight(SunPart)
+    SupportClass.AnchorPhysicalSun(SunPart)
+    SupportClass.OnSunGrabRequest(ClickDetector, SunPart)
 
     ClickDetector.Name = "SunGrabber"
     ClickDetector.Parent = SunPart
@@ -150,8 +179,8 @@ function SupportClass:GenerateSun()
     warn("generate sun function called")
     local self = self :: Support 
     local SpawnSunCooldown = self["SpawnSunCooldown"] :: number
-    local PlantModelInstance = self["ModelInstance"] :: Model   
-    local CenterFace = PlantModelInstance:FindFirstChild("CenterFace") :: UnionOperation
+    local SupportModelInstance = self["ModelInstance"] :: Model   
+    local CenterFace = SupportModelInstance:FindFirstChild("CenterFace") :: UnionOperation
     local CenterFacePos = CenterFace.Position
     local SunSpawnPosition = CenterFacePos + Vector3.new(0, 4, 0)
     
@@ -168,6 +197,11 @@ end
 function SupportClass:Initialize() 
     local self = self :: Support
     local SpawnSunCooldown = self["SpawnSunCooldown"]
+    local GetRemainingCooldown = CooldownService.GetRemainingCooldown --[[
+        we cache these variables because using them in the while loop would affect perfomance, it is a microopt. 
+    ]]
+    local StartCooldown = CooldownService.StartCooldown
+    local GenerateSuns = SupportClass.SupportActions["GenerateSuns"]
     
     CooldownService.StartCooldown(self, SupportClass.SupportActions["GenerateSuns"], SpawnSunCooldown)
 
@@ -175,18 +209,17 @@ function SupportClass:Initialize()
 
     task.spawn(function()
 
-        local IsCooldownOn = CooldownService.IsCooldownOn
-        
         while self:IsAlive() do
-   
-            if IsCooldownOn(self, SupportClass.SupportActions["GenerateSuns"]) then 
-                task.wait(0.2)
-                continue  
+
+            if not self:IsAlive() then 
+                break -- we do this break here before the other lines cuz incase our SupportPLANT dies before the task.wait() finishes counting, it will run 
+                -- even if theyre dead 
             end
 
+            task.wait(GetRemainingCooldown(self, GenerateSuns))
             self:GenerateSun()
-            task.wait()
-   
+            StartCooldown(self, GenerateSuns, SpawnSunCooldown)
+
         end 
 
     end)

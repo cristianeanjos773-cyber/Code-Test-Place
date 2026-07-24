@@ -7,7 +7,7 @@ local Remotes = ReplicatedStorageFolder.Remotes
 
 local SunGUIRE = Remotes.SunGUIRE :: RemoteEvent
 
-local SunGoal = {Transaparency = 0}
+local SunGoal = {Transparency = 0}
 
 local SunPlayerService = {}
 SunPlayerService.SunTweenInfo = TweenInfo.new(1)
