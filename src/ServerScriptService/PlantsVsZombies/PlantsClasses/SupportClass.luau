@@ -1,4 +1,5 @@
 --!strict 
+local Debris = game:GetService("Debris")
 local PointsService = game:GetService("PointsService")
 local PlantsClassFolder = script.Parent
 local PVZFolder = script.Parent.Parent
@@ -6,6 +7,7 @@ local PVZFolder = script.Parent.Parent
 
 local Services = PVZFolder.Services
 --local PlantsData = require(PVZDataFolder.PlantsData)
+local SunPlayerService = require(PVZFolder.Services.SunPlayerService)
 local RootPlantsClass = require(PlantsClassFolder.RootPlantsClass)
 --local PVZObjectDataService = require(Services.PVZObjectDataService)
 
@@ -30,7 +32,7 @@ SupportClass
 SupportClass.SunPhysicalProperties = table.freeze({
     ["Name"] = "Sun", 
     ["Color"] = Color3.fromRGB(255, 251, 0), 
-    ["Size"] = Vector3.new(2, 2, 2),
+    ["Size"] = Vector3.new(1, 1, 1),
     ["Shape"] = Enum.PartType.Ball, 
 })
 
@@ -79,35 +81,68 @@ function SupportClass.CreatePointLight(SunParent: Part)
     
     end  
 
+    PointLight.Parent = SunParent 
+
+end
+
+function SupportClass.SetUpPhyisicalSunProperties(SunPart: Part)
+    for Properties, Values in SupportClass.SunPhysicalProperties do 
+        local SunPartAsAny = SunPart :: any 
+        
+        if SunPartAsAny[Properties] == nil then 
+            continue 
+        end
+
+        SunPartAsAny[Properties] = Values
+    end  
+end 
+
+local SunNumber = 20
+
+function SupportClass.OnSunGrabRequest(SunGrabber: ClickDetector, SunPart: Part)
+    local SunGrabConn: RBXScriptConnection? = nil 
+   
+    SunGrabConn = SunGrabber.MouseClick:Connect(function(Player)
+    
+        if SunGrabConn then 
+            SunGrabConn:Disconnect()
+            SunGrabConn = nil
+        end 
+
+        SunGrabber.MaxActivationDistance = 0 
+
+        SunPlayerService.TweenAndDeleteSun(SunPart)
+
+        if Player then 
+            SunPlayerService.ManagePlayerSuns(Player, SunNumber)
+        end 
+
+    end)
+
 end 
 
 function SupportClass.CreatePhysicalSun(SunSpawnPosition: Vector3) 
     local SunPart = Instance.new("Part")
     local ClickDetector = Instance.new("ClickDetector")
-    local PointLight = Instance.new("PointLight")
     
-    SunPart.Name = "Sun"
-    SunPart.Color = SupportClass.SunPhysicalProperties["Color"]
+    SupportClass.SetUpPhyisicalSunProperties(SunPart)
     SunPart:AddTag("SunPartsTag")
-    SunPart.Size = SupportClass.SunPhysicalProperties["Size"]
-    SunPart.Shape = SupportClass.SunPhysicalProperties["Shape"]
     SunPart.Position = SunSpawnPosition
     SunPart.Parent = SunPartsFolder
-    SupportClass.ApplySunImpulse(SunPart)
-    warn("Called create phyasdasd")
-    --[[task.defer(function()
-        SupportClass.ApplySunImpulse(SunPart)
-    end)]]
-    
+    SupportClass.CreatePointLight(SunPart)
+
     ClickDetector.Name = "SunGrabber"
     ClickDetector.Parent = SunPart
-    
-    PointLight.Name = "SunPointLight"
-    PointLight.Brightness = 2
-    PointLight.Color = SunPart.Color
-    PointLight.Enabled = true
-    PointLight.Shadows = true 
-    PointLight.Parent = SunPart
+
+
+    task.defer(function()
+        SupportClass.ApplySunImpulse(SunPart) --[[
+            a task.defer() is used here because Roblox needs to finish registering and initializing the physicalbody of the body in this frame
+            delaying it with taskdefer() guarantees that :ApplyImpulse() is not ignored by the engine 
+        ]]
+    end)
+
+    Debris:AddItem(SunPart, 15)
 
 end 
 
@@ -140,11 +175,11 @@ function SupportClass:Initialize()
 
     task.spawn(function()
 
-        local IsCooldownOnB = CooldownService.IsCooldownOn
+        local IsCooldownOn = CooldownService.IsCooldownOn
         
         while self:IsAlive() do
    
-            if CooldownService.IsCooldownOn(self, "GenerateSun") then 
+            if IsCooldownOn(self, SupportClass.SupportActions["GenerateSuns"]) then 
                 task.wait(0.2)
                 continue  
             end

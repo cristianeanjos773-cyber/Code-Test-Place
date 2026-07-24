@@ -32,30 +32,5 @@ function SunPlayerService.ManagePlayerSuns(Player: Player, Amount: number)
     SunsInt.Value = SunsInt.Value + Amount
 end 
 
-function SunPlayerService.RequestSunGrab()
-    for _, SunParts in CollectionService:GetTagged("SunPartsTag") do 
-        if SunParts:IsA("Part") then 
-            
-            if not SunParts:FindFirstChild("SunGrabber") then 
-                continue 
-            end
-            
-            local SunGrabberClickDet = SunParts:FindFirstChild("SunGrabber") :: ClickDetector
-
-            SunGrabberClickDet.MouseClick:Connect(function(Player)
-                
-                SunPlayerService.TweenAndDeleteSun(SunParts)    
-                SunGUIRE:FireClient(Player)
-                
-                if Player then
-                    local SunNumber = 20  
-                    SunPlayerService.ManagePlayerSuns(Player, SunNumber)
-                end 
-
-            end)
-
-        end 
-    end 
-end 
 
 return SunPlayerService 

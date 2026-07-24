@@ -1,25 +1,33 @@
 --!strict 
 local Players = game:GetService("Players")
 
-export type CooldownKey = {
-    [string|Player|{}]: number
+export type CooldownObject =  string|Player|{}
+
+export type CooldownData = {
+    [string]: number 
 }
+
 
 local CooldownService = {}
 
-CooldownService.ObjectsInCooldown = {}
+CooldownService.ObjectsInCooldown = {} :: {[CooldownObject]: CooldownData}
 
 setmetatable(CooldownService.ObjectsInCooldown, {__mode = "k"})
 
 
-function CooldownService.IsCooldownOn(Object: CooldownKey, Action: string): boolean  
-    local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] :: CooldownKey 
+function CooldownService.IsCooldownOn(Object: CooldownObject, Action: string): boolean 
+    local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] 
+
+    if not ObjectInCooldown then 
+        warn("You have probable forgotten to call .StartCooldown() first, no object in table foumd.")
+        return false 
+    end
 
     if not ObjectInCooldown[Action] then 
         ObjectInCooldown[Action] = 0
     end 
 
-    local ObjectActionCooldown = ObjectInCooldown[Action] :: number
+    local ObjectActionCooldown = ObjectInCooldown[Action] 
     warn(ObjectActionCooldown)
     local CurrentTime = os.clock()
     
@@ -31,10 +39,10 @@ function CooldownService.IsCooldownOn(Object: CooldownKey, Action: string): bool
 
 end 
 
-function CooldownService.StartCooldown(Object: CooldownKey, Action: string, CooldownNumber: number)
+function CooldownService.StartCooldown(Object: CooldownObject, Action: string, CooldownNumber: number)
     
-    local ObjectFinalCooldown = os.clock() + CooldownNumber :: number
-    local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] :: CooldownKey  
+    local ObjectFinalCooldown = os.clock() + CooldownNumber 
+    local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] 
     
     if not ObjectInCooldown then 
         ObjectInCooldown = {}
@@ -45,9 +53,25 @@ function CooldownService.StartCooldown(Object: CooldownKey, Action: string, Cool
 
 end
 
+function CooldownService.GetRemainingCooldown(Object: CooldownObject, Action: string): number 
+    local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] 
+
+    if not ObjectInCooldown then 
+        warn("You have probable forgotten to call .StartCooldown() first, no object in table foumd.")
+        return 0
+    end
+
+    local CooldownEnd = ObjectInCooldown[Action]
+
+    if not CooldownEnd then
+        return 0 
+    end 
+    
+    return math.max(CooldownEnd - os.clock(), 0)
+end 
 
 Players.PlayerAdded:Connect(function(Player: Player)
-    CooldownService.ObjectsInCooldown[Player] = {} :: CooldownKey
+    CooldownService.ObjectsInCooldown[Player] = {} 
 end)
 
 return CooldownService
