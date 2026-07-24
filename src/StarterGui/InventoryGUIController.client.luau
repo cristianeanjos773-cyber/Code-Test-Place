@@ -1,2 +1,2 @@
 local StarterGUISCripts = script.Parent
-local PVZUIService = require(StarterGUISCripts:WaitForChild("PVZUIService"))
+local InvtoryRelatedModule = require(StarterGUISCripts:WaitForChild("InvtoryRelatedModule"))

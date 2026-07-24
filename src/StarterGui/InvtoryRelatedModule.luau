@@ -35,16 +35,16 @@ type Inventory = {
     [string]: string 
 }
 
-local PVZUIService = {}
+local InvtoryRelatedModule = {}
 
-function PVZUIService.InventoryVis() 
+function InvtoryRelatedModule.InventoryVis() 
     InventoryPopUp.OnClientEvent:Connect(function()
         PlantInventoryScrollingFrame.Visible = true   
         FrameHolder.Visible = true   
     end)
 end 
 
-function PVZUIService.SpawnFailedReceiver() 
+function InvtoryRelatedModule.SpawnFailedReceiver() 
     SpawnFailed.OnClientEvent:Connect(function(TextConfig: SpawnTextConfig)
         TextConfig.Text = TextConfig["Text"]
         TextConfig.Color = TextConfig["Color"]
@@ -54,24 +54,24 @@ end
 local leaderstats = Player:WaitForChild("leaderstats") :: Folder
 local Suns = leaderstats:WaitForChild("Suns") :: IntValue
 
-function PVZUIService.OrganizeInvData() 
+function InvtoryRelatedModule.OrganizeInvData() 
     InventoryDataClientSender.OnClientEvent:Connect(function(PlayerData: DataTemplate) 
         local Inventory = PlayerData["Inventory"] :: Inventory
         local Coins = PlayerData["Coins"] :: number 
         local Level = PlayerData["Level"] :: number 
         warn("invetory signal has been received by client!")
-        PVZUIService.SetUpInventory(Inventory)
+        InvtoryRelatedModule.SetUpInventory(Inventory)
     end)
 end 
 
-function PVZUIService.SetUpInventory(Inventory: Inventory) 
+function InvtoryRelatedModule.SetUpInventory(Inventory: Inventory) 
     print("inventory", Inventory)
     for Keys, _ in Inventory do 
         local NewImageTemplate = ImageTemplate:Clone()
         local NewSpawnButton = NewImageTemplate:WaitForChild("SpawnTemplate") :: TextButton
         local PlantSunPrice = PlantDataHolders["PlantSunPrices"][Keys] :: string  
         NewImageTemplate.Parent = FrameHolder 
-    NewImageTemplate.Visible = true 
+        NewImageTemplate.Visible = true 
         NewImageTemplate.Image = PlantDataHolders.PlantImages[Keys] :: string
         NewSpawnButton.Text = `Spawn {Inventory[Keys]} for {PlantSunPrice} Suns`
         RequestPlantSpawnFunc(NewSpawnButton, Keys)
@@ -82,18 +82,16 @@ local SunsGUI = PlayerGui:WaitForChild("SunsGUI") :: ScreenGui
 local SunsFrame = SunsGUI:WaitForChild("SunsFrame") :: Frame
 local SunsAmountText = SunsFrame:WaitForChild("SunsAmountText") :: TextLabel 
 
-function PVZUIService.HandleSuns() 
+function InvtoryRelatedModule.HandleSuns() 
     SunsAmountText.Text = `Suns: {Suns.Value}`
-    warn("ffff")
     Suns:GetPropertyChangedSignal("Value"):Connect(function()
         SunsAmountText.Text = `Suns: {Suns.Value}`
     end)
 end 
 
-PVZUIService.OrganizeInvData()
-PVZUIService.SpawnFailedReceiver() 
-PVZUIService.HandleSuns()
-PVZUIService.InventoryVis()
-warn("PVZUISERVICE LIFE SIGN?")
+InvtoryRelatedModule.OrganizeInvData()
+InvtoryRelatedModule.SpawnFailedReceiver() 
+InvtoryRelatedModule.HandleSuns()
+InvtoryRelatedModule.InventoryVis()
 
-return PVZUIService 
+return InvtoryRelatedModule 

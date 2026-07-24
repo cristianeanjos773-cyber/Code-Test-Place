@@ -34,6 +34,7 @@ SupportClass.SunPhysicalProperties = table.freeze({
     ["Color"] = Color3.fromRGB(255, 251, 0), 
     ["Size"] = Vector3.new(1, 1, 1),
     ["Shape"] = Enum.PartType.Ball, 
+    ["CanCollide"] = true, 
 })
 
 SupportClass.PhysicalSunPointLightProperties = table.freeze({
@@ -179,8 +180,8 @@ function SupportClass:GenerateSun()
     warn("generate sun function called")
     local self = self :: Support 
     local SpawnSunCooldown = self["SpawnSunCooldown"] :: number
-    local SupportModelInstance = self["ModelInstance"] :: Model   
-    local CenterFace = SupportModelInstance:FindFirstChild("CenterFace") :: UnionOperation
+    local PlantModelInstance = self["ModelInstance"] :: Model   
+    local CenterFace = PlantModelInstance:FindFirstChild("CenterFace") :: UnionOperation
     local CenterFacePos = CenterFace.Position
     local SunSpawnPosition = CenterFacePos + Vector3.new(0, 4, 0)
     

@@ -18,7 +18,9 @@ local PlantsData = {
         ["Defense"] = 150,
         ["Class"] = "Tank",
         ["SunPrice"] = 50,
-        ["SpawnCooldown"] = 100, 
+        ["SpawnCooldown"] = 100,
+        ["Phase1Scale"] = 0.7,
+        ["FinalPhaseScale"] = 0.5, 
         ["ModelName"] = "Wallnut",
     },
 

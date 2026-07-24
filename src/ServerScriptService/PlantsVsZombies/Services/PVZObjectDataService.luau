@@ -42,6 +42,10 @@ setmetatable(PVZObjectDataService.ModelOOP["Zombies"],  {__mode = "k"})
 setmetatable(PVZObjectDataService.OOPModel["Plants"], {__mode = "k"})
 setmetatable(PVZObjectDataService.OOPModel["Zombies"], {__mode = "k"})
 
+function PVZObjectDataService.InsertAttributesInModel() 
+    -- TODO: make the function go through a loop in the plant object making it connect all its stats to the model
+end
+
 function PVZObjectDataService.GetObject(Model: Model): {}?
     
     if Model:HasTag("Plant") then
