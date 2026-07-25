@@ -1,4 +1,4 @@
-local PlantsClasses = script.Parent
+local PlantsClasses = script.Parent.Parent.PlantsClasses
 local PVZFlder = PlantsClasses.Parent
 local PVZData = PVZFlder.PVZData
 local PlantsData = require(PVZData.PlantsData)

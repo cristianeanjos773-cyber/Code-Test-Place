@@ -1,3 +1,6 @@
+local PlantsVSZombiesFolder = script.Parent.Parent
+local OOPFolder = PlantsVSZombiesFolder.OOP
+
 local RootZombiesClass = {}
 
 export type RootZombie = typeof(setmetatable({} :: {
@@ -28,6 +31,10 @@ function RootZombiesClass.new(StatsTable: {[string]: string | number}): RootZomb
 
     print(self, StatsTable)
     return self :: RootZombie 
+
+end 
+
+function RootZombiesClass:WalkToHouse() 
 
 end 
 

@@ -6,12 +6,9 @@ local PvZ = script.Parent
 
 local SunPlayerService = require(PvZ.Services.SunPlayerService)
 local SpawnService = require(PvZ.Services.SpawnService)
-local PlantsClass = require(PvZ.PlantsClasses.RootPlantsClass)
 local OOPFolder = PvZ.OOP
-local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
 local PlantsData = require(PvZ.PVZData.PlantsData)
 local CooldownService = require(PvZ.Services.CooldownService)
-local PlantsClassesData = require(script.Parent.PlantsClasses.PlantsClassesData)
 local Remotes = ReplicatedStorageFolder.Remotes 
 local RequestPlantSpawn = Remotes.RequestPlantSpawn :: RemoteEvent
 local SpawnFailedWarning = Remotes.SpawnFailedWarning :: RemoteEvent
@@ -98,6 +95,20 @@ function GameplayMainModule.RequestPlantSpawn(SpawnPart: Part)
     RequestPlantSpawn.OnServerEvent:Connect(function(Player: Player, PlantRequested: string)
         GameplayMainModule.SpawnPlant(Player, PlantRequested, SpawnPart)
     end)
+
+end 
+
+function GameplayMainModule.SpawnZombies(ZombieModel: Model, SpawnPart: Part)
+    
+    if not SpawnPart or not SpawnPart:IsA("Part") then 
+        return 
+    end 
+
+    if not ZombieModel then 
+        return 
+    end 
+
+    
 
 end 
 

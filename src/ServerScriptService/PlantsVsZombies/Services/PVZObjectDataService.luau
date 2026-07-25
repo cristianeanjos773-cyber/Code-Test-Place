@@ -2,11 +2,6 @@
 NOTE: this is a module which'll be used to connect Models (PlantsModules, ZombieModules) to their OOP objects 
 ]]
 
-
-local PVZFolder  = script.Parent.Parent
-local OOPFolder = PVZFolder.OOP
-local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
-
 local PVZObjectDataService = {}
 
 type ModelDictionary = {
@@ -76,31 +71,5 @@ function PVZObjectDataService.DisconnectOOP(OOPObjectKey: {})
 
 end 
 
-function PVZObjectDataService.ConnectOOPModel(OOPObjectModel: Model, ObjectOOPRequest: string) 
-
-    if not OOPObjectModel:HasTag("Plant") and not OOPObjectModel:HasTag("Zombie") then
-        return
-    end
-
-    local FuncToCall 
-    local DictionaryToBePut: "Plants" | "Zombies"
-
-    if OOPObjectModel:HasTag("Plant") then 
-        FuncToCall = OOPObjectFactory.CreatePlantObject
-        DictionaryToBePut = "Plants"
-    else
-        FuncToCall = OOPObjectFactory.CreateZombieObject
-        DictionaryToBePut = "Zombies"
-    end 
-
-    local OOPObject = FuncToCall(ObjectOOPRequest)
-
-    OOPObject["ModelInstance"] = OOPObjectModel
-
-    PVZObjectDataService.ModelOOP[DictionaryToBePut][OOPObjectModel] = OOPObject -- THIS CONNECTS MODEL TO OOP 
-    PVZObjectDataService.OOPModel[DictionaryToBePut][OOPObject] = OOPObjectModel -- THIS CONNECTS OOP OBJECT TO OOP
-    OOPObject:Initialize() 
-
-end
 
 return PVZObjectDataService

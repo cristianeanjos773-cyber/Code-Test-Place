@@ -6,7 +6,7 @@ local PVZFolder = SSSFolder.PlantsVsZombies
 local PVZDataFolder = PVZFolder.PVZData
 local PlantsDataModule = require(PVZDataFolder.PlantsData)
 local ZombiesDataModule = require(PVZDataFolder.ZombiesData)
-local PVZObjectDataService =  require(PVZFolder.Services.PVZObjectDataService)
+local ConnectModelToOOP =  require(PVZFolder.Services.ConnectModelToOOP)
 
 local SpawnService = {}
 
@@ -59,8 +59,7 @@ function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagS
         return
     end
 
-    PVZObjectDataService.ConnectOOPModel(CloneModule, ObjectRequested)
-    warn("MY OBJ", PVZObjectDataService.GetObject(CloneModule))
+    ConnectModelToOOP(CloneModule, ObjectRequested)
     
 end 
 
