@@ -6,6 +6,7 @@ local ZombiesData = {
        ["BiteDamage"] = 10, 
        ["BiteCooldown"] = 5,    
        ["ModelName"] = "ClassicZombie", 
+       ["ModelTypeTag"] = "Zombie",
        ["Class"] = "CommonZombie",
     },
 
@@ -15,6 +16,7 @@ local ZombiesData = {
         ["MaxHP"] = 40,
         ["BiteCooldown"] = 5,
         ["ModelName"] = "ConeHeadZombie",
+        ["ModelTypeTag"] = "Zombie",
         ["Class"] = "CommonZombie",
     },
 
@@ -24,6 +26,7 @@ local ZombiesData = {
         ["MaxHP"] = 50,
         ["BiteCooldown"] = 5,
         ["ModelName"] = "BucketHeadZombie",
+        ["ModelTypeTag"] = "Zombie",
         ["Class"] = "CommonZombie",
     },
 

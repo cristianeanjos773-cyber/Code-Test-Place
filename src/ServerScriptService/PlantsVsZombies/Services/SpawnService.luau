@@ -1,17 +1,22 @@
+--!strict
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local SSSFolder = ServerScriptService.ServerScriptService
 
 local PVZFolder = SSSFolder.PlantsVsZombies
 local PVZDataFolder = PVZFolder.PVZData
+
 local PlantsDataModule = require(PVZDataFolder.PlantsData)
 local ZombiesDataModule = require(PVZDataFolder.ZombiesData)
-local ConnectModelToOOP =  require(PVZFolder.Services.ConnectModelToOOP)
+local PVZObjectService = require(PVZFolder.Services.PVZObjectDataService)
+local ObjectDataService = require(PVZFolder.Services.PVZObjectDataService) 
+
+local  ConnectModelToOOP = PVZObjectService.ConnectModelToOOP
 
 local SpawnService = {}
 
 
-function SpawnService.SetUpModel(ObjectModel: Model, SpawnPart: Part, TagString: string) 
+function SpawnService.SetUpModel(ObjectModel: Model, SpawnPart: Part, TagString: string): Model  
     
     if not ObjectModel then
         warn("objectmodel argument not passed") 
@@ -38,17 +43,19 @@ function SpawnService.FindObjectModel(ObjectRequested: string): Model | nil
         warn(`either plantmodel doesnt exist or plantmodel or someone put a nommodel instance with the same name as of a normal plant model {ObjectModel.ClassName}`)
         return
     end 
-
+                                
     return ObjectModel 
 
 end
 
+--ConnectModelToOOP
 
-function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagString: string) 
-    local ObjectModel = SpawnService.FindObjectModel(ObjectRequested)
-    --local Class
+
+
+function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagString: string): Model | nil 
+    local ObjectModel = SpawnService.FindObjectModel(ObjectRequested) :: Model  
     local CloneModule = SpawnService.SetUpModel(ObjectModel, SpawnPart, TagString)
-
+    --local Class
     --[[if CloneModule:HasTag("Plant") then 
         Class = PlantsDataModule[ObjectRequested]["Class"]
     else
@@ -61,6 +68,8 @@ function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagS
 
     ConnectModelToOOP(CloneModule, ObjectRequested)
     
+    return CloneModule  
+
 end 
 
 return SpawnService 

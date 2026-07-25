@@ -2,7 +2,8 @@ local libs = script.Parent
 local GoodSignal = require(libs.GoodSignalFramework)
 
 local ServerSignals = {
-    TankDamaged = GoodSignal.new()
+    TankDamaged = GoodSignal.new(),
+    OOPObjectDied = GoodSignal.new() 
 }
 
 return ServerSignals 

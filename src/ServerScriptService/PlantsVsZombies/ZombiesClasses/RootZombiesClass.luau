@@ -1,5 +1,15 @@
 local PlantsVSZombiesFolder = script.Parent.Parent
-local OOPFolder = PlantsVSZombiesFolder.OOP
+local PVZWorkspaceFolder = workspace.PlantsVsZombies
+
+local Services = PlantsVSZombiesFolder.Services
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
+
+local libs = ReplicatedStorageFolder.libs
+local ServerSignals = require(libs.ServerSignals)
+local OOPObjectDied = ServerSignals.OOPObjectDied
+
+local ZombieGoal = PVZWorkspaceFolder.ZombieGoal :: Part 
 
 local RootZombiesClass = {}
 
@@ -34,8 +44,46 @@ function RootZombiesClass.new(StatsTable: {[string]: string | number}): RootZomb
 
 end 
 
-function RootZombiesClass:WalkToHouse() 
+function RootZombiesClass:WalkToHouse(ZombieModel: Model) 
+    local ZombieHumanoid = ZombieModel:FindFirstChild("Humanoid") :: Humanoid
+    ZombieHumanoid.WalkToPoint(ZombieGoal.Position)
+end 
 
+function RootZombiesClass:IsAlive(): boolean  
+    local self = self :: RootZombie
+    local SelfHP = self["HP"] 
+
+    if SelfHP > 0 then 
+        return true
+    else
+        return false 
+    end 
+
+end 
+
+function RootZombiesClass:TakeDamage(Damage: number) 
+    local self = self :: RootZombie
+    local SelfHP = self["HP"] 
+    
+    local FinalDamageResult = math.max(Damage - self["Defense"], 0)
+    local FinalSelfHP = SelfHP - FinalDamageResult
+    
+    self["HP"] = FinalSelfHP
+    
+    if self["HP"] <= 0 then
+        self:PlantDie() 
+    end
+
+end
+
+function RootZombiesClass:ZombieDie() 
+    local self = self :: RootZombie
+    OOPObjectDied:Fire(self)
+end 
+
+function RootZombiesClass:HealZombie(HealAmount: number) 
+    local self = self :: RootZombie
+    self["HP"] = math.min(self["HP"] + HealAmount, self["MaxHP"])
 end 
 
 return RootZombiesClass

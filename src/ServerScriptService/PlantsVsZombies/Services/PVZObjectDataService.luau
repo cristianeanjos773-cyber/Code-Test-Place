@@ -1,41 +1,15 @@
 --[[
 NOTE: this is a module which'll be used to connect Models (PlantsModules, ZombieModules) to their OOP objects 
 ]]
+--local Services = PVZFolder.Services 
 
+local PVZFolder = script.Parent.Parent
+local PlantsData = PVZFolder.PVZData
+local OOPFolder = PVZFolder.OOP 
+local PVZObjectData = require(PlantsData.PVZObjectData)
+local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
 local PVZObjectDataService = {}
 
-type ModelDictionary = {
-    [Model]: any
-}
-
-type OOPDictionary = {
-    [{}]: Model 
-}
-
-type ModelOOP = {
-    Plants: ModelDictionary,
-    Zombies: ModelDictionary,
-}
-
-type OOPModel = {
-    Plants: OOPDictionary,
-    Zombies: OOPDictionary 
-}
-
-PVZObjectDataService.ModelOOP = {
-    ["Plants"] = {} :: ModelDictionary,
-    ["Zombies"] = {} :: ModelDictionary, 
-} :: ModelOOP
-
-PVZObjectDataService.OOPModel = {
-    ["Plants"] = {} :: OOPDictionary, 
-    ["Zombies"] = {} :: OOPDictionary 
-} :: OOPModel 
-
-setmetatable(PVZObjectDataService.ModelOOP["Plants"], {__mode = "k"})
-setmetatable(PVZObjectDataService.ModelOOP["Zombies"],  {__mode = "k"})
-setmetatable(PVZObjectDataService.OOPModel["Plants"], {__mode = "k"})
-setmetatable(PVZObjectDataService.OOPModel["Zombies"], {__mode = "k"})
 
 function PVZObjectDataService.InsertAttributesInModel() 
     -- TODO: make the function go through a loop in the plant object making it connect all its stats to the model
@@ -44,9 +18,9 @@ end
 function PVZObjectDataService.GetObject(Model: Model): {}?
     
     if Model:HasTag("Plant") then
-        return PVZObjectDataService.ModelOOP.Plants[Model]
+        return PVZObjectData.ModelOOP.Plants[Model]
     elseif Model:HasTag("Zombie") then
-        return PVZObjectDataService.ModelOOP.Zombies[Model]
+        return PVZObjectData.ModelOOP.Zombies[Model]
     end
 
     return nil
@@ -68,6 +42,33 @@ function PVZObjectDataService.DisconnectOOP(OOPObjectKey: {})
     if not OOPObject then 
         return
     end 
+
+end 
+
+function PVZObjectDataService.ConnectModelToOOP(OOPObjectModel: Model, ObjectOOPRequest: string) 
+
+    if not OOPObjectModel:HasTag("Plant") and not OOPObjectModel:HasTag("Zombie") then
+        return
+    end
+
+    local FuncToCall 
+    local DictionaryToBePut: "Plants" | "Zombies"
+
+    if OOPObjectModel:HasTag("Plant") then 
+        FuncToCall = OOPObjectFactory.CreatePlantObject
+        DictionaryToBePut = "Plants"
+    else
+        FuncToCall = OOPObjectFactory.CreateZombieObject
+        DictionaryToBePut = "Zombies"
+    end 
+
+    local OOPObject = FuncToCall(ObjectOOPRequest)
+
+    OOPObject["ModelInstance"] = OOPObjectModel
+
+    PVZObjectData.ModelOOP[DictionaryToBePut][OOPObjectModel] = OOPObject -- THIS CONNECTS MODEL TO OOP 
+    PVZObjectData.OOPModel[DictionaryToBePut][OOPObject] = OOPObjectModel -- THIS CONNECTS OOP OBJECT TO OOP
+    OOPObject:Initialize() 
 
 end 
 

@@ -1,7 +1,11 @@
 --!strict
-local PVZFolder = script.Parent.Parent
-local Services = PVZFolder.Services
-local PVZObjectDataService = require(Services.PVZObjectDataService ) 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
+local libs = ReplicatedStorageFolder.libs
+
+local ServerSignals = require(libs.ServerSignals)
+local OOPObjectDied = ServerSignals.OOPObjectDied
+
 local PlantsClass = {}
 
 PlantsClass.__index = PlantsClass 
@@ -13,6 +17,8 @@ export type RootPlant = typeof(setmetatable({} :: {
     ["SpawnCooldown"]: number,
     ["SunPrice"]: number,
     ["ModelName"]: string,
+    ["ZombieHumanoid"]: Humanoid,
+    ["IsAliveBool"]: boolean,  
     ["IsAlive"]: () -> (),
     ["TakeDamage"]: () -> (),
     ["HealPlant"]: () -> (),  
@@ -67,10 +73,8 @@ end
 
 function PlantsClass:PlantDie() 
     local self = self :: RootPlant
-    local PlantModel = PVZObjectDataService.GetModel(self) :: Model 
-
-    PlantModel:Destroy()
-    PVZObjectDataService.DisconnectOOP(self)
+    self["IsAliveBool"]= false 
+    OOPObjectDied:Fire(self)
 end 
 
 function PlantsClass:HealPlant(HealAmount: number) 

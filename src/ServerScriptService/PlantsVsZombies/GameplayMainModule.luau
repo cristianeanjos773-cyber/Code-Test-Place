@@ -1,17 +1,23 @@
 --!strict 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage 
 local PvZ = script.Parent
 
 local SunPlayerService = require(PvZ.Services.SunPlayerService)
 local SpawnService = require(PvZ.Services.SpawnService)
-local OOPFolder = PvZ.OOP
 local PlantsData = require(PvZ.PVZData.PlantsData)
+
 local CooldownService = require(PvZ.Services.CooldownService)
 local Remotes = ReplicatedStorageFolder.Remotes 
+
 local RequestPlantSpawn = Remotes.RequestPlantSpawn :: RemoteEvent
 local SpawnFailedWarning = Remotes.SpawnFailedWarning :: RemoteEvent
+
+local Services = PvZ.Services 
+local ZombieSpawnService = require(Services.ZombieSpawnService)
+
+local SpawnRandomZombie = ZombieSpawnService.SpawnRandomZombie 
 
 local GameplayMainModule = {}
  
@@ -77,13 +83,13 @@ function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, S
         return
     end
 
-    SpawnService.SpawnObject(PlantRequested, SpawnPart, TagString)
+    workspace:SetAttribute("WAVESTARTED", true)
+    GameplayMainModule.SpawnZombies()
     CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
     warn(CooldownService.ObjectsInCooldown)
     SunPlayerService.ManagePlayerSuns(Player, -SunCost)
 
 end
-
 
 
 function GameplayMainModule.RequestPlantSpawn(SpawnPart: Part) 
@@ -98,17 +104,14 @@ function GameplayMainModule.RequestPlantSpawn(SpawnPart: Part)
 
 end 
 
-function GameplayMainModule.SpawnZombies(ZombieModel: Model, SpawnPart: Part)
-    
-    if not SpawnPart or not SpawnPart:IsA("Part") then 
-        return 
+function GameplayMainModule.SpawnZombies()
+    local WAVESTARTED = workspace:GetAttribute("WAVESTARTED") :: boolean 
+  
+    if not WAVESTARTED then 
+        return
     end 
 
-    if not ZombieModel then 
-        return 
-    end 
-
-    
+    SpawnRandomZombie()
 
 end 
 
