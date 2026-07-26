@@ -8,6 +8,7 @@ local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
 local libs = ReplicatedStorageFolder.libs
 local ServerSignals = require(libs.ServerSignals)
 local OOPObjectDied = ServerSignals.OOPObjectDied
+local OOPAttackRequest = ServerSignals.OOPAttackRequest
 
 local ZombieGoal = PVZWorkspaceFolder.ZombieGoal :: Part 
 
@@ -16,8 +17,6 @@ local RootZombiesClass = {}
 export type RootZombie = typeof(setmetatable({} :: {
     ["HP"]: number,
     ["MaxHP"]: number, 
-    ["BiteDamage"]: number, 
-    ["BiteCooldown"]: number,    
     ["ModelName"]: string, 
     ["Class"]: string,  
     },  
@@ -46,7 +45,7 @@ end
 
 
 function RootZombiesClass:AttackPlant() 
-
+    local self = self :: RootZombie 
 end 
 
 local PlantTag: string = "Plant"
@@ -82,7 +81,7 @@ function RootZombiesClass:WalkToHouse(ZombieModel: Model)
             return 
         end 
 
-        
+        OOPAttackRequest()
 
     end)
 
@@ -113,7 +112,7 @@ function RootZombiesClass:TakeDamage(Damage: number)
     self["HP"] = FinalSelfHP
     
     if self["HP"] <= 0 then
-        self:PlantDie() 
+        self:ZombieDie() 
     end
 
 end

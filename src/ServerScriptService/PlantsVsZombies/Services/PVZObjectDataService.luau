@@ -38,10 +38,18 @@ function PVZObjectDataService.DisconnectOOP(OOPObjectKey: {})
     end
     
     local OOPObject = PVZObjectDataService.GetObject(OOPObjectKey["ModelInstance"])
-    
+    local OOPModel = PVZObjectDataService.GetModel(OOPObject)
+
     if not OOPObject then 
         return
     end 
+
+    if not OOPModel then 
+        return 
+    end 
+
+    OOPModel:Destroy()
+    OOPObject = nil 
 
 end 
 

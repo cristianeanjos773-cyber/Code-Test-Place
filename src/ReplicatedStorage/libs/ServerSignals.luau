@@ -3,7 +3,8 @@ local GoodSignal = require(libs.GoodSignalFramework)
 
 local ServerSignals = {
     TankDamaged = GoodSignal.new(),
-    OOPObjectDied = GoodSignal.new() 
+    OOPObjectDied = GoodSignal.new(), 
+    OOPAttackRequest = GoodSignal.new(), 
 }
 
 return ServerSignals 
