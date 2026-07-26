@@ -17,7 +17,7 @@ setmetatable(CooldownService.ObjectsInCooldown, {__mode = "k"})
 
 function CooldownService.IsCooldownOn(Object: CooldownObject, Action: string): boolean 
     local ObjectInCooldown = CooldownService.ObjectsInCooldown[Object] 
-
+    warn(Object)
     if not ObjectInCooldown then 
         warn("You have probable forgotten to call .StartCooldown() first, no object in table foumd.")
         return false 
@@ -28,7 +28,7 @@ function CooldownService.IsCooldownOn(Object: CooldownObject, Action: string): b
     end 
 
     local ObjectActionCooldown = ObjectInCooldown[Action] 
-    warn(ObjectActionCooldown)
+    warn(ObjectInCooldown, ObjectActionCooldown)
     local CurrentTime = os.clock()
     
     if ObjectActionCooldown and CurrentTime < ObjectActionCooldown then 

@@ -34,6 +34,7 @@ SupportClass.SunPhysicalProperties = table.freeze({
     ["Color"] = Color3.fromRGB(255, 251, 0), 
     ["Size"] = Vector3.new(1, 1, 1),
     ["Shape"] = Enum.PartType.Ball, 
+    ["Material"] = Enum.Material.Neon, 
     ["CanCollide"] = true, 
 })
 
@@ -48,7 +49,7 @@ SupportClass.SupportActions = table.freeze({
     ["GenerateSuns"] = "GenerateSuns",
 })
 
-function SupportClass.new(SupportPlantStats: Support): Support  
+function SupportClass.new(SupportPlantStats: {}): Support  
     local self = RootPlantsClass.new(SupportPlantStats) :: Support
     setmetatable(self, SupportClass)
     return self 

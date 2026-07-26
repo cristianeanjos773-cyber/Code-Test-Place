@@ -7,7 +7,7 @@ local ZombiesData = {
        ["BiteCooldown"] = 5,    
        ["ModelName"] = "ClassicZombie", 
        ["ModelTypeTag"] = "Zombie",
-       ["Class"] = "CommonZombie",
+       ["Class"] = "ClassicZombie",
     },
 
     ["ConeHeadZombie"] = {
@@ -17,7 +17,7 @@ local ZombiesData = {
         ["BiteCooldown"] = 5,
         ["ModelName"] = "ConeHeadZombie",
         ["ModelTypeTag"] = "Zombie",
-        ["Class"] = "CommonZombie",
+        ["Class"] = "ClassicZombie",
     },
 
     ["BucketHeadZombie"] = {
@@ -27,7 +27,7 @@ local ZombiesData = {
         ["BiteCooldown"] = 5,
         ["ModelName"] = "BucketHeadZombie",
         ["ModelTypeTag"] = "Zombie",
-        ["Class"] = "CommonZombie",
+        ["Class"] = "ClassicZombie",
     },
 
 

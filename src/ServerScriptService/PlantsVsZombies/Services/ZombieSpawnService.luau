@@ -16,13 +16,16 @@ local CooldownService = require(Services.CooldownService)
 local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
 local PVZObjectDataService = require(Services.PVZObjectDataService)
 
-local ZombieSpawns = PVZWorskpaceFolder.ZombieSpawns :: Folder 
+local GetRemainingCooldown = CooldownService.GetRemainingCooldown
 
+local ZombieSpawns = PVZWorskpaceFolder.ZombieSpawns :: Folder 
 local ZombieSpawnsArray = ZombieSpawns:GetChildren() :: {Part}
 
 local IsCooldownOn = CooldownService.IsCooldownOn
 local SpawnObject = SpawnService.SpawnObject
 local CreateZombieObject = OOPObjectFactory.CreateZombieObject
+
+local StartCooldown = CooldownService.StartCooldown
 
 local ZombieTagString = "Zombie"
 local GameString = "Game" -- these strings are put here to reduce the chances of typos 
@@ -47,21 +50,38 @@ function ZombieSpawnService.SpawnRandomZombie()
     if IsCooldownOn(GameString, SpawnZombieAction) then 
         return 
     end 
-
-    local RandomSpawnNumber = math.random(1, #ZombieSpawnsArray)
-    local RandomNameNumber = math.random(1, #RandomZombieNames)
-    local ChosenZombieName = RandomZombieNames[RandomNameNumber] :: string 
-    local RandomZombierSpawnPart = ZombieSpawnService[RandomSpawnNumber]
-
-    local Humanoid = Instance.new("Humanoid")
-    local ZombieObject = CreateZombieObject(ChosenZombieName) 
-    local ZombieModel = SpawnObject(ChosenZombieName, RandomZombierSpawnPart, ZombieTagString) :: Model 
     
-    Humanoid.Parent = ZombieModel
-    ZombieObject:Initialize() 
-    CooldownService.StartCooldown(GameString, SpawnZombieAction, ZOMBIESPAWNTIME) 
+    local ZombieSpawnsArrayElementNumber = #ZombieSpawnsArray
+    local RandomZombieNamesElementsNumber = #RandomZombieNames
 
-    --[[TODO: find a way to make zombies spawn]]
+    
+   task.spawn(function() 
+       while workspace:GetAttribute("WAVESTARTED") do 
+            local RandomSpawnNumber = math.random(1, ZombieSpawnsArrayElementNumber)
+            local RandomNameNumber = math.random(1, RandomZombieNamesElementsNumber)
+            local ChosenZombieName = RandomZombieNames[RandomNameNumber] :: string
+            local RandomZombieSpawnPart = ZombieSpawnsArray[RandomSpawnNumber] :: Part 
+            local RemainingCooldown = GetRemainingCooldown(GameString, SpawnZombieAction)
+
+            if RemainingCooldown > 0 then 
+                print("DDDDDDDD",RemainingCooldown)
+                task.wait(RemainingCooldown)
+            end
+
+            if not IsCooldownOn(GameString, SpawnZombieAction) then 
+               CreateZombieObject(ChosenZombieName) 
+               SpawnObject(ChosenZombieName, RandomZombieSpawnPart, ZombieTagString)
+               StartCooldown(GameString, SpawnZombieAction, ZOMBIESPAWNTIME) 
+            end
+
+            warn("DEADLY LOOP RUNNING")
+            task.wait() --[[Why is  a task.wait() here if we have remaining cooldown above? 
+                Beucase the cooldown starts at 0, if we dont make this task,wait(), the game would crash. 
+                the task.wait() above is to make the while true do not waste resources when its unnecessary, we wait for around the remaining time. 
+            ]]
+        
+        end 
+    end)
     
 
 end 

@@ -68,7 +68,14 @@ function PVZObjectDataService.ConnectModelToOOP(OOPObjectModel: Model, ObjectOOP
 
     PVZObjectData.ModelOOP[DictionaryToBePut][OOPObjectModel] = OOPObject -- THIS CONNECTS MODEL TO OOP 
     PVZObjectData.OOPModel[DictionaryToBePut][OOPObject] = OOPObjectModel -- THIS CONNECTS OOP OBJECT TO OOP
-    OOPObject:Initialize() 
+
+    for Keys, Vals in OOPObject do 
+        warn(`[PVZOBJECTDATASERVICE]: OOPObject: {Keys}, {Vals} `)
+    end 
+
+    task.spawn(function()
+       OOPObject:Initialize() 
+    end)
 
 end 
 

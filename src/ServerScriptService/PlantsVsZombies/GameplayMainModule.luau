@@ -42,6 +42,7 @@ function GameplayMainModule.ValidateSun(Player: Player, PlantRequested): boolean
 
 end 
 
+local PlantString = "Plant"
 
 function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, SpawnPart: Part) 
    
@@ -83,11 +84,15 @@ function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, S
         return
     end
 
-    workspace:SetAttribute("WAVESTARTED", true)
-    GameplayMainModule.SpawnZombies()
-    CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
+    if not workspace:GetAttribute("WAVESTARTED") then 
+        workspace:SetAttribute("WAVESTARTED", true) 
+    end 
+
     warn(CooldownService.ObjectsInCooldown)
     SunPlayerService.ManagePlayerSuns(Player, -SunCost)
+    CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
+    SpawnService.SpawnObject(PlantRequested, SpawnPart, PlantString)
+    GameplayMainModule.SpawnZombies()
 
 end
 

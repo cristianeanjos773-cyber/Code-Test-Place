@@ -34,7 +34,7 @@ OOPObjectFactory.ClassesToConstructors = {
     },
     
     ["ZombieConstructors"] = {
-        ["ClassicZombie"] = ClassicZombiesClass.new        
+        ["ClassicZombie"] = ClassicZombiesClass.new,   
     }
 
 }
@@ -50,6 +50,7 @@ end
 function OOPObjectFactory.CreateZombieObject(ZombieName: string)
     local ZombieStatus = ZombiesData[ZombieName]
     local ZombieClassToConstruct = ZombiesData[ZombieName]["Class"]
+    print(ZombieName, ZombieStatus, ZombieClassToConstruct)
     return OOPObjectFactory.ClassesToConstructors["ZombieConstructors"][ZombieClassToConstruct](ZombieStatus) :: ClassicZombie 
 end
 

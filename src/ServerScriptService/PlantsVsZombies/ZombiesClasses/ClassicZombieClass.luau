@@ -21,10 +21,16 @@ export type ClassicZombie = typeof(setmetatable({} :: RootZombie & {
 ClassicZombieClass 
 ))
 
+function ClassicZombieClass.new(ClassicZombieStats: {}): ClassicZombie  
+    local self = RootZombiesClass.new(ClassicZombieStats) :: ClassicZombie
+    setmetatable(self, ClassicZombieClass)
+    return self 
+end
 
 function ClassicZombieClass:Initialize() 
     local self = self :: ClassicZombie
     local ZombieModel = self["ModelInstance"]
+    warn("Printing self properties:", self, ZombieModel)
     self:WalkToHouse(ZombieModel)
 end 
 
