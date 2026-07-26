@@ -11,8 +11,6 @@ type RootZombie = RootZombiesClass.RootZombie
 export type ClassicZombie = typeof(setmetatable({} :: RootZombie & {
     ["HP"]: number,
     ["MaxHP"]: number, 
-    ["BiteDamage"]: number, 
-    ["BiteCooldown"]: number,    
     ["ModelName"]: string, 
     ["ModelInstance"]: Model, 
     ["Class"]: string,

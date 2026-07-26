@@ -44,16 +44,19 @@ function RootZombiesClass.new(StatsTable: {[string]: string | number}): RootZomb
 
 end 
 
-function RootZombiesClass:OnPlantTouched(ZombieHumanoid: Humanoid) 
+
+function RootZombiesClass:AttackPlant() 
 
 end 
+
+local PlantTag: string = "Plant"
 
 function RootZombiesClass:WalkToHouse(ZombieModel: Model) 
     local self = self :: RootZombie
     local ZombieHumanoid = ZombieModel:WaitForChild("Humanoid") :: Humanoid
     local ZombieHumanoidRoot = ZombieModel:WaitForChild("HumanoidRootPart") :: Part
     warn(ZombieModel, ZombieHumanoid)
-    ZombieHumanoid:MoveTo(ZombieGoal.Position)
+    ZombieHumanoid:Move(Vector3.new(0,0,1))
 
     task.spawn(function() 
 
@@ -61,14 +64,32 @@ function RootZombiesClass:WalkToHouse(ZombieModel: Model)
             if (ZombieHumanoidRoot.Position - ZombieGoal.Position).Magnitude <= 2 then 
                 break 
             end 
-            ZombieHumanoid:MoveTo(ZombieGoal.Position)
+            ZombieHumanoid:Move(Vector3.new(0,0,1))
             print("walk to loop")
             task.wait(5)
         end 
+    end)
+
+
+    ZombieHumanoid.Touched:Connect(function(OtherPart: BasePart)
+        local PlantModel = OtherPart.Parent :: Model? 
+
+        if not PlantModel or not PlantModel:IsA("Model") then 
+            return
+        end
+        
+        if not PlantModel:HasTag(PlantTag) then 
+            return 
+        end 
+
+        
 
     end)
 
 end 
+
+
+
 
 function RootZombiesClass:IsAlive(): boolean  
     local self = self :: RootZombie
@@ -96,6 +117,7 @@ function RootZombiesClass:TakeDamage(Damage: number)
     end
 
 end
+
 
 function RootZombiesClass:ZombieDie() 
     local self = self :: RootZombie
