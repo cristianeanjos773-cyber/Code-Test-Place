@@ -20,20 +20,20 @@ local libs = ReplicatedStorageFolder.libs
 local ServerSignals = require(libs.ServerSignals)
 local PVZOBjectDataService = require(script.Parent.Services.PVZObjectDataService)
 
-local function OnObjectDied(OOPObjectKey: {}) 
+local function OnObjectDied(OOPObjectKey) 
     PVZOBjectDataService.DisconnectOOP(OOPObjectKey)
 end 
 
 local DamageRequest = CombatService.ValidateAttackRequest
 
-local function OnObjectDamaged(OOPObjectKey: {}) 
-    DamageRequest(OOPObjectKey)    
+local function OnObjectDamaged(OOPObjectKey, AttackRequest) 
+    DamageRequest(OOPObjectKey, AttackRequest)    
 end 
 
 ServerSignals.OOPObjectDied:Connect(function(OOPObjectKey) 
     OnObjectDied(OOPObjectKey) 
 end)
  
-ServerSignals.OOPAttackRequest:Connect(function(OOPObjectKey) 
-    OnObjectDamaged(OOPObjectKey)
+ServerSignals.OOPAttackRequest:Connect(function(OOPObjectKey, AttackRequest: string) 
+    OnObjectDamaged(OOPObjectKey,  AttackRequest)
 end)

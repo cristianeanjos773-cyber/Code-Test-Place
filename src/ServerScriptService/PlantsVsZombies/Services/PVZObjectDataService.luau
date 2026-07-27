@@ -8,6 +8,10 @@ local PlantsData = PVZFolder.PVZData
 local OOPFolder = PVZFolder.OOP 
 local PVZObjectData = require(PlantsData.PVZObjectData)
 local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
+
+export type Plant = OOPObjectFactory.ShooterClass & OOPObjectFactory.ShooterClass & OOPObjectFactory.TankClass
+export type Zombie =  OOPObjectFactory.ClassicZombie 
+
 local PVZObjectDataService = {}
 
 
@@ -15,7 +19,7 @@ function PVZObjectDataService.InsertAttributesInModel()
     -- TODO: make the function go through a loop in the plant object making it connect all its stats to the model
 end
 
-function PVZObjectDataService.GetObject(Model: Model): {}?
+function PVZObjectDataService.GetObject(Model: Model): Plant | Zombie?
     
     if Model:HasTag("Plant") then
         return PVZObjectData.ModelOOP.Plants[Model]
@@ -76,10 +80,6 @@ function PVZObjectDataService.ConnectModelToOOP(OOPObjectModel: Model, ObjectOOP
 
     PVZObjectData.ModelOOP[DictionaryToBePut][OOPObjectModel] = OOPObject -- THIS CONNECTS MODEL TO OOP 
     PVZObjectData.OOPModel[DictionaryToBePut][OOPObject] = OOPObjectModel -- THIS CONNECTS OOP OBJECT TO OOP
-
-    for Keys, Vals in OOPObject do 
-        warn(`[PVZOBJECTDATASERVICE]: OOPObject: {Keys}, {Vals} `)
-    end 
 
     task.spawn(function()
        OOPObject:Initialize() 

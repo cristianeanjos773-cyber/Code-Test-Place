@@ -12,7 +12,6 @@ local function BindButtonsToRequest()
     for _, TextButtons in CollectionService:GetTagged("PlantShopPurchase") do 
         if TextButtons:IsA("TextButton") then 
             local PlantRequest = TextButtons:GetAttribute("PlantRequested") :: string
-            warn(PlantRequest)
             TextButtons.Activated:Connect(function()
                 PurchasePlantRequest:FireServer(PlantRequest)
             end)

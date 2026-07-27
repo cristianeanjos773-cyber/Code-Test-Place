@@ -1,11 +1,13 @@
 local PlantsData = {
     
     ["Peashooter"] = {
-    ["Damage"] = 20, 
+        ["Damage"] = 20, 
         ["HP"] = 100, 
         ["MaxHP"] = 100, 
         ["Defense"] = 20,
+        ["Name"] = "Peashooter",
         ["Class"] = "Shooter",
+        ["Team"] = "Plants",
         ["SunPrice"] = 100, 
         ["SpawnCooldown"] = 20,
     },
@@ -13,7 +15,9 @@ local PlantsData = {
     ["Wallnut"] = {
         ["HP"] = 400,
         ["MaxHP"] = 400, 
-        ["Defense"] = 150,
+        ["Defense"] = 3,
+        ["Name"] = "Wallnut",
+        ["Team"] = "Plants",
         ["Class"] = "Tank",
         ["SunPrice"] = 50,
         ["SpawnCooldown"] = 100,
@@ -27,7 +31,9 @@ local PlantsData = {
         ["MaxHP"] = 15,
         ["SpawnSunCooldown"] = 10,
         ["Defense"] = 1,
+        ["Team"] = "Plants",
         ["Class"] = "Support",
+        ["Name"] = "Sunflower",
         ["SunPrice"] = 50, 
         ["SpawnCooldown"] = 10, 
         ["ModelName"] = "Sunflower"

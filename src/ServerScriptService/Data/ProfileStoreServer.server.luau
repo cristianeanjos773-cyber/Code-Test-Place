@@ -42,7 +42,6 @@ local function PlayerAdded(player: Player)
     if player.Parent == players then
         DataModuleManager.Profile[player] = playerprofile
         DataModuleManager.SendDataToClient(player)
-        warn("ATTEMPTED TO CALL THAT DATA FUNCTION WHICH YOU NOW WHICH IS")
         InitialzeValues(player)
     else
         playerprofile:EndSession()

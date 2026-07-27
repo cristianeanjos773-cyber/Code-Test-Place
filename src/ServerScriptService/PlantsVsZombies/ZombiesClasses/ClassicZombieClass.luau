@@ -8,10 +8,7 @@ ClassicZombieClass.__index = ClassicZombieClass
 
 type RootZombie = RootZombiesClass.RootZombie
 
-export type ClassicZombie = typeof(setmetatable({} :: RootZombie & {
-    ["HP"]: number,
-    ["MaxHP"]: number, 
-    ["ModelName"]: string, 
+export type ClassicZombie = typeof(setmetatable({} :: RootZombie & { 
     ["ModelInstance"]: Model, 
     ["Class"]: string,
     ["Initialize"]: () -> (),  
@@ -28,8 +25,7 @@ end
 function ClassicZombieClass:Initialize() 
     local self = self :: ClassicZombie
     local ZombieModel = self["ModelInstance"]
-    warn("Printing self properties:", self, ZombieModel)
-    self:WalkToHouse(ZombieModel)
+    self:WalkToHouse()
 end 
 
 return ClassicZombieClass 

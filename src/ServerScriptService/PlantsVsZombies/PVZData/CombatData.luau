@@ -9,8 +9,10 @@ CombatData.ZombiesAttacks = {
         ["Bite"] = {
             ["Size"] = Vector3.new(5, 5, 5),
             ["AttackType"] = "Melee",
+            ["AttackName"] = "ClassicZombieBite",
+            ["AttackTime"] = 3,
             ["Damage"] = 10, 
-            ["BiteCooldown"] = 5,  
+            ["Cooldown"] = 5,  
         }
     },
 
@@ -18,8 +20,10 @@ CombatData.ZombiesAttacks = {
         ["Bite"] = {
             ["Size"] = Vector3.new(5, 5, 5),
             ["AttackType"] = "Melee",
+            ["AttackName"] = "ConeHeadZombieBite",
+            ["AttackTime"] = 3, 
             ["Damage"] = 15, 
-            ["BiteCooldown"] = 5,  
+            ["Cooldown"] = 5,  
         }
     },
 
@@ -27,8 +31,10 @@ CombatData.ZombiesAttacks = {
         ["Bite"] = {
             ["Size"] = Vector3.new(5, 5, 5),
             ["AttackType"] = "Melee",
+            ["AttackName"] = "BucketHeadZombieBite",
             ["Damage"] = 15, 
-            ["BiteCooldown"] = 5,  
+            ["AttackTime"] = 3,
+            ["Cooldown"] = 5,  
         }
     },
 
@@ -38,9 +44,10 @@ CombatData.PlantsAttacks = {
     
     ["Peashooter"] = {
         ["Shoot"] = {
-            ["Size"] = 4,
+            ["Size"] = Vector3.new(4, 4, 4),
             ["AttackType"] = "Projectile",
-            ["ShootCooldown"] = 3, 
+            ["AttackName"] = "PeashooterShoot",
+            ["Cooldown"] = 3, 
         }, 
     }, 
 }

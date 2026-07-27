@@ -19,7 +19,7 @@ local PlantsModelsFolder = ServerStorage.PlantsModels
 local ZombiesModelsFolder = ServerStorage.ZombiesModels 
 
 
-local  ConnectModelToOOP = PVZObjectService.ConnectModelToOOP
+local ConnectModelToOOP = PVZObjectService.ConnectModelToOOP
 
 local SpawnService = {}
 
@@ -46,7 +46,6 @@ function SpawnService.SetUpModel(ObjectModel: Model, SpawnPart: Part, TagString:
    
     local ObjModelCloneParent
 
-    warn("Tagstring:", TagString)
 
     if TagString == "Plant" then 
         ObjModelCloneParent = PlantsFolder 
@@ -58,8 +57,6 @@ function SpawnService.SetUpModel(ObjectModel: Model, SpawnPart: Part, TagString:
     ObjModelClone:AddTag(TagString)  
     ObjModelClone:MoveTo(SpawnPart.Position)
 
-    warn("Printing ModelClone:", ObjModelClone)
-
     return ObjModelClone :: Model 
 
 end
@@ -70,10 +67,8 @@ function SpawnService.FindObjectModel(ObjectRequested: string): Model | nil
         warn(`[SpawnService]: Err in ObjectRequestedParam: {ObjectRequested} \n Type of ObjectRequested: {typeof(ObjectRequested)}`)
         return 
     end 
-   warn(PlantsModelsFolder:GetChildren(), ZombiesModelsFolder:GetChildren())
-    local ObjectModel =  PlantsModelsFolder:FindFirstChild(ObjectRequested) or ZombiesModelsFolder:FindFirstChild(ObjectRequested) :: Model
 
-    warn(ObjectModel, ObjectRequested, "faskdsafdjksj")
+    local ObjectModel =  PlantsModelsFolder:FindFirstChild(ObjectRequested) or ZombiesModelsFolder:FindFirstChild(ObjectRequested) :: Model
     
     if not ObjectModel or not ObjectModel:IsA("Model") then
         warn(`either plantmodel doesnt exist or plantmodel or someone put a nommodel instance with the same name as of a normal plant model {ObjectModel.ClassName}`)
@@ -125,11 +120,10 @@ function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagS
     end ]]
 
     if not CloneModule:HasTag("Plant") and not CloneModule:HasTag("Zombie") then
-        warn("aaaaaaaaaaaaDDDDDDDDDDDDDDDD")
+        warn("[SpawnService]: not found tags.")
         return
     end
 
-    warn(CloneModule, "CLONEMODULES CHILDREN:", CloneModule:GetChildren())
     ConnectModelToOOP(CloneModule, ObjectRequested)
     return CloneModule  
 

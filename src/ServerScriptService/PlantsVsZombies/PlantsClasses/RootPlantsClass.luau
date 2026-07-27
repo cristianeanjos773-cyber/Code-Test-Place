@@ -1,6 +1,8 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
+local OOPObjectDamaged = ReplicatedStorageFolder.Remotes.OOPObjectDamaged :: RemoteEvent
+
 local libs = ReplicatedStorageFolder.libs
 
 local ServerSignals = require(libs.ServerSignals)
@@ -15,13 +17,14 @@ export type RootPlant = typeof(setmetatable({} :: {
     ["MaxHP"]: number, 
     ["Defense"]: number,
     ["SpawnCooldown"]: number,
-    ["SunPrice"]: number,
     ["ModelName"]: string,
+    ["Name"]: string, 
+    ["SunPrice"]: number,
     ["ZombieHumanoid"]: Humanoid,
     ["IsAliveBool"]: boolean,  
-    ["IsAlive"]: () -> (),
-    ["TakeDamage"]: () -> (),
-    ["HealPlant"]: () -> (),  
+    ["IsAlive"]: () -> (boolean),
+    ["TakeDamage"]: (Damage: number) -> (),
+    ["HealPlant"]: (HealAmount: number) -> (),  
     ["PlantDie"]: () -> ()
     },  
     PlantsClass
@@ -33,6 +36,7 @@ function PlantsClass.new(StatsTable: {[string]: string | number}): RootPlant
         warn(`Stats table doesnt exist or is not a table, check the statstable argument, typeof: {StatsTable}`)
         return 
     end
+
     local self = setmetatable({}, PlantsClass) :: RootPlant 
 
     for PropertyName, PropertyValue in StatsTable do 
@@ -59,11 +63,17 @@ end
 function PlantsClass:TakeDamage(Damage: number) 
     local self = self :: RootPlant
     local SelfHP = self["HP"] 
+    local SelfMaxHP = self["MaxHP"]
+    local SelfModel = self["ModelInstance"] 
     
     local FinalDamageResult = math.max(Damage - self["Defense"], 0)
     local FinalSelfHP = SelfHP - FinalDamageResult
     
     self["HP"] = FinalSelfHP
+    warn("ROOTS PLANTS DAMAGE DEBUG", self["HP"])
+
+    OOPObjectDamaged:FireAllClients(SelfModel, SelfHP, SelfMaxHP)
+
     
     if self["HP"] <= 0 then
         self:PlantDie() 

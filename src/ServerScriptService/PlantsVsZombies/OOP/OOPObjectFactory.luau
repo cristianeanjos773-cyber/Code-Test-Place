@@ -42,7 +42,6 @@ OOPObjectFactory.ClassesToConstructors = {
 function OOPObjectFactory.CreatePlantObject(PlantName: string)
     local PlantStatus = PlantsData[PlantName]
     local PlantClassToConstruct = PlantsData[PlantName]["Class"]
-    warn(PlantClassToConstruct)
     return OOPObjectFactory.ClassesToConstructors["PlantConstructors"][PlantClassToConstruct](PlantStatus) :: ShooterClass | TankClass | SupportClass
 end
 
@@ -50,7 +49,6 @@ end
 function OOPObjectFactory.CreateZombieObject(ZombieName: string)
     local ZombieStatus = ZombiesData[ZombieName]
     local ZombieClassToConstruct = ZombiesData[ZombieName]["Class"]
-    print(ZombieName, ZombieStatus, ZombieClassToConstruct)
     return OOPObjectFactory.ClassesToConstructors["ZombieConstructors"][ZombieClassToConstruct](ZombieStatus) :: ClassicZombie 
 end
 

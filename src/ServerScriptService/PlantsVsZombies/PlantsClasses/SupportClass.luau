@@ -178,7 +178,6 @@ function SupportClass.CreatePhysicalSun(SunSpawnPosition: Vector3)
 end 
 
 function SupportClass:GenerateSun()
-    warn("generate sun function called")
     local self = self :: Support 
     local SpawnSunCooldown = self["SpawnSunCooldown"] :: number
     local PlantModelInstance = self["ModelInstance"] :: Model   
@@ -198,6 +197,7 @@ end
 
 function SupportClass:Initialize() 
     local self = self :: Support
+
     local SpawnSunCooldown = self["SpawnSunCooldown"]
     local GetRemainingCooldown = CooldownService.GetRemainingCooldown --[[
         we cache these variables because using them in the while loop would affect perfomance, it is a microopt. 

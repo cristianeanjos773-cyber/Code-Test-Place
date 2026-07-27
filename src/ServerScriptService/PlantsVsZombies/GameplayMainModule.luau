@@ -88,7 +88,6 @@ function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, S
         workspace:SetAttribute("WAVESTARTED", true) 
     end 
 
-    warn(CooldownService.ObjectsInCooldown)
     SunPlayerService.ManagePlayerSuns(Player, -SunCost)
     CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
     SpawnService.SpawnObject(PlantRequested, SpawnPart, PlantString)

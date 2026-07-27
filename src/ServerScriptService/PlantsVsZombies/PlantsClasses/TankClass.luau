@@ -41,11 +41,7 @@ TankClass.TankShrinkageChanges = {
 
 }
 
-function TankClass:CreateLifeGUI(TankModel: Model) 
-    local self = self :: Tank
-
-end 
-
+-- SHRINKS THE TANK'S SIZE
 function TankClass:ShrinkTank(TankModel: Model, ShrinkageNumber: number) 
     
     if not TankModel or not ShrinkageNumber then 

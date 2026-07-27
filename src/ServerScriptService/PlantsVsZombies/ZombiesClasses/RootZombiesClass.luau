@@ -6,11 +6,16 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
 
 local libs = ReplicatedStorageFolder.libs
+local CombatData = require(PlantsVSZombiesFolder.PVZData.CombatData)
 local ServerSignals = require(libs.ServerSignals)
 local OOPObjectDied = ServerSignals.OOPObjectDied
 local OOPAttackRequest = ServerSignals.OOPAttackRequest
 
 local ZombieGoal = PVZWorkspaceFolder.ZombieGoal :: Part 
+
+local ZombieActions = {
+    ["Bite"] = "Bite",
+}
 
 local RootZombiesClass = {}
 
@@ -19,6 +24,9 @@ export type RootZombie = typeof(setmetatable({} :: {
     ["MaxHP"]: number, 
     ["ModelName"]: string, 
     ["Class"]: string,  
+    ["Name"]: string, 
+    ["AttackClosePlant"]: string, 
+    ["ModelInstance"]: Model,
     },  
     RootZombiesClass
 ))
@@ -38,20 +46,30 @@ function RootZombiesClass.new(StatsTable: {[string]: string | number}): RootZomb
         self[PropertyName] = PropertyValue 
     end 
 
-    print(self, StatsTable)
     return self :: RootZombie 
 
 end 
 
 
-function RootZombiesClass:AttackPlant() 
+function RootZombiesClass:AttackPlant(ActionWhenTouched: string) 
     local self = self :: RootZombie 
+    local ZombieModel = self["ModelInstance"]
+    local ZombieHumanoid = ZombieModel:WaitForChild("Humanoid") :: Humanoid
+
+    ZombieHumanoid.WalkSpeed = 0
+    OOPAttackRequest:Fire(self, ActionWhenTouched)
+
 end 
 
 local PlantTag: string = "Plant"
 
-function RootZombiesClass:WalkToHouse(ZombieModel: Model) 
+function RootZombiesClass:WalkToHouse() 
     local self = self :: RootZombie
+    local ZombieModel = self["ModelInstance"] 
+    local ZombieOOPName = self["Name"]
+    local AttackClosePlant = self["AttackClosePlant"]
+    local ActionWhenTouched = CombatData.ZombiesAttacks[ZombieOOPName][AttackClosePlant] :: string 
+
     local ZombieHumanoid = ZombieModel:WaitForChild("Humanoid") :: Humanoid
     local ZombieHumanoidRoot = ZombieModel:WaitForChild("HumanoidRootPart") :: Part
     warn(ZombieModel, ZombieHumanoid)
@@ -64,7 +82,6 @@ function RootZombiesClass:WalkToHouse(ZombieModel: Model)
                 break 
             end 
             ZombieHumanoid:Move(Vector3.new(0,0,1))
-            print("walk to loop")
             task.wait(5)
         end 
     end)
@@ -79,15 +96,18 @@ function RootZombiesClass:WalkToHouse(ZombieModel: Model)
         
         if not PlantModel:HasTag(PlantTag) then 
             return 
-        end 
-
-        OOPAttackRequest()
+        end
+        
+        task.spawn(function()
+            while PlantModel do 
+                self:AttackPlant(ActionWhenTouched)
+                task.wait(3)
+            end 
+        end)
 
     end)
 
-end 
-
-
+end
 
 
 function RootZombiesClass:IsAlive(): boolean  
@@ -105,13 +125,13 @@ end
 function RootZombiesClass:TakeDamage(Damage: number) 
     local self = self :: RootZombie
     local SelfHP = self["HP"] 
-    
+
     local FinalDamageResult = math.max(Damage - self["Defense"], 0)
     local FinalSelfHP = SelfHP - FinalDamageResult
     
     self["HP"] = FinalSelfHP
     
-    if self["HP"] <= 0 then
+    if not self:IsAlive() then
         self:ZombieDie() 
     end
 

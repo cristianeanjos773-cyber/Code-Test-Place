@@ -74,7 +74,6 @@ function ZombieSpawnService.SpawnRandomZombie()
                StartCooldown(GameString, SpawnZombieAction, ZOMBIESPAWNTIME) 
             end
 
-            warn("DEADLY LOOP RUNNING")
             task.wait() --[[Why is  a task.wait() here if we have remaining cooldown above? 
                 Beucase the cooldown starts at 0, if we dont make this task,wait(), the game would crash. 
                 the task.wait() above is to make the while true do not waste resources when its unnecessary, we wait for around the remaining time. 
