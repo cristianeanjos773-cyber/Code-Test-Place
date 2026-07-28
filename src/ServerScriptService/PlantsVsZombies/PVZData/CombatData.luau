@@ -12,7 +12,7 @@ CombatData.ZombiesAttacks = {
             ["AttackName"] = "ClassicZombieBite",
             ["AttackTime"] = 3,
             ["Damage"] = 10, 
-            ["Cooldown"] = 5,  
+            ["Cooldown"] = 3,  
         }
     },
 
@@ -22,8 +22,8 @@ CombatData.ZombiesAttacks = {
             ["AttackType"] = "Melee",
             ["AttackName"] = "ConeHeadZombieBite",
             ["AttackTime"] = 3, 
-            ["Damage"] = 15, 
-            ["Cooldown"] = 5,  
+            ["Damage"] = 10, 
+            ["Cooldown"] = 3,  
         }
     },
 
@@ -32,9 +32,9 @@ CombatData.ZombiesAttacks = {
             ["Size"] = Vector3.new(5, 5, 5),
             ["AttackType"] = "Melee",
             ["AttackName"] = "BucketHeadZombieBite",
-            ["Damage"] = 15, 
+            ["Damage"] = 10, 
             ["AttackTime"] = 3,
-            ["Cooldown"] = 5,  
+            ["Cooldown"] = 3,  
         }
     },
 

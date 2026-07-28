@@ -70,24 +70,20 @@ function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: Attac
             local ObjectHitModel = PartsHit.Parent :: Model? 
 
             if not ObjectHitModel then 
-                warn("NOT OBJECT MODEL")
                 continue
             end 
 
             if not ObjectHitModel:HasTag("Plant") and not ObjectHitModel:HasTag("Zombie") then 
-                warn("NOT TAG")
                 continue 
             end 
 
             local OOPObjectHit = GetObject(ObjectHitModel) 
 
             if not OOPObjectHit then
-               warn("NOT ANYONE HIY")
                continue
             end     
         
             if HitModels[ObjectHitModel] then
-                warn("HAS ALREADY BEEN HI") 
                 continue
              end 
         
@@ -101,11 +97,10 @@ function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: Attac
             
             CombatService.ApplyDamageOnObject(OOPObjectHit, AttackDamage)
             HitModels[ObjectHitModel] = true 
-            print("FIRST PRINT HIT MODELS", HitModels)
+        
 
         end
-        print("SECOND PRINT HIT MODELS", HitModels)
-        task.wait(0.05)
+        task.wait(AttackTime)
     end 
     CombatService.CreatePhysicalHitbox(AttackStatus, HitboxPosition, AttackTime)
 end 
@@ -123,7 +118,6 @@ function CombatService.ApplyDamageOnObject(OOPObjectHit: Plant | Zombie, Damage:
 end
 
 function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPartPosition: CFrame, AttackTime: number) 
-    
     local HitboxPart = Instance.new("Part")
     HitboxPart.Name = PartStatus["AttackName"]
     HitboxPart.Transparency = 0.5
@@ -133,11 +127,8 @@ function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPart
     HitboxPart.Anchored = true
     HitboxPart.CanCollide = false 
     HitboxPart.Parent = workspace
-
-    task.delay(AttackTime, function()
-        HitboxPart:Destroy()
-    end)
-
+    task.wait(1)
+    HitboxPart:Destroy()
 end
 
 function CombatService.CheckObjectInSideHitbox() 

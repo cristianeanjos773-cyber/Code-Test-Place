@@ -27,8 +27,8 @@ local PlantsData = {
     },
 
     ["Sunflower"] = {
-        ["HP"] = 15,
-        ["MaxHP"] = 15,
+        ["HP"] = 30,
+        ["MaxHP"] = 30,
         ["SpawnSunCooldown"] = 10,
         ["Defense"] = 1,
         ["Team"] = "Plants",

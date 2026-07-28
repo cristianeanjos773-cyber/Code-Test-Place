@@ -4,7 +4,6 @@ local PVZWorkspaceFolder = workspace.PlantsVsZombies
 local Services = PlantsVSZombiesFolder.Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
-
 local libs = ReplicatedStorageFolder.libs
 local CombatData = require(PlantsVSZombiesFolder.PVZData.CombatData)
 local ServerSignals = require(libs.ServerSignals)
@@ -67,9 +66,7 @@ function RootZombiesClass:WalkToHouse()
     local self = self :: RootZombie
     local ZombieModel = self["ModelInstance"] 
     local ZombieOOPName = self["Name"]
-    local AttackClosePlant = self["AttackClosePlant"]
-    local ActionWhenTouched = CombatData.ZombiesAttacks[ZombieOOPName][AttackClosePlant] :: string 
-
+    local AttackClosePlant = self["AttackClosePlant"] :: string
     local ZombieHumanoid = ZombieModel:WaitForChild("Humanoid") :: Humanoid
     local ZombieHumanoidRoot = ZombieModel:WaitForChild("HumanoidRootPart") :: Part
     warn(ZombieModel, ZombieHumanoid)
@@ -95,12 +92,12 @@ function RootZombiesClass:WalkToHouse()
         end
         
         if not PlantModel:HasTag(PlantTag) then 
-            return 
+            return
         end
         
         task.spawn(function()
             while PlantModel do 
-                self:AttackPlant(ActionWhenTouched)
+                self:AttackPlant(AttackClosePlant)
                 task.wait(3)
             end 
         end)
