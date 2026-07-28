@@ -29,18 +29,24 @@ type AttackStatus = {
     ["Damage"]: number,
 }
 
+type ObjectsInCombat = {
+    [Plant | Zombie]: Plant | Zombie 
+}
+
 local IsCooldownOn = CooldownService.IsCooldownOn
 local StartCooldown = CooldownService.StartCooldown 
 local GetObject = PVZObjectDataService.GetObject
 
-
 local CombatService = {}
-
-
 
 function CombatService.SetUpRaycast() 
 
 end
+
+function CombatService.ObjectsInCombatHandler(AttackerOOPObject: Plant | Zombie, OOPObjectVictim: Plant | Zombie) 
+    CombatService.ObjectsInCombat[AttackerOOPObject] = OOPObjectVictim
+
+end 
 
 function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: AttackStatus) 
     local ZombieModel = OOPObject["ModelInstance"] :: Model 
@@ -86,7 +92,7 @@ function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: Attac
             if HitModels[ObjectHitModel] then
                 continue
              end 
-        
+             
             if ZombieModel == ObjectHitModel then 
                 continue 
             end
@@ -94,7 +100,7 @@ function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: Attac
             if ObjectHitModel == ZombieModel then 
                 continue 
             end 
-            
+
             CombatService.ApplyDamageOnObject(OOPObjectHit, AttackDamage)
             HitModels[ObjectHitModel] = true 
         
@@ -131,9 +137,6 @@ function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPart
     HitboxPart:Destroy()
 end
 
-function CombatService.CheckObjectInSideHitbox() 
-
-end 
 
 --[[function CombatService.CreateAttackHitbox(OOPObject: Plant & Zombie, AttackType: string)   
    

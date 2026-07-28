@@ -21,7 +21,7 @@ local ServerSignals = require(libs.ServerSignals)
 local PVZOBjectDataService = require(script.Parent.Services.PVZObjectDataService)
 
 local function OnObjectDied(OOPObjectKey) 
-    PVZOBjectDataService.DisconnectOOP(OOPObjectKey)
+PVZOBjectDataService.DisconnectOOP(OOPObjectKey)
 end 
 
 local DamageRequest = CombatService.ValidateAttackRequest

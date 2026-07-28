@@ -2,12 +2,16 @@
 NOTE: this is a module which'll be used to connect Models (PlantsModules, ZombieModules) to their OOP objects 
 ]]
 --local Services = PVZFolder.Services 
-
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage 
+local ServerSignals = require(ReplicatedStorageFolder.libs.ServerSignals)
 local PVZFolder = script.Parent.Parent
 local PlantsData = PVZFolder.PVZData
 local OOPFolder = PVZFolder.OOP 
+
 local PVZObjectData = require(PlantsData.PVZObjectData)
 local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
+local ObjectsInCombatModule = require(PlantsData.ObjectsInCombatModule)
 
 export type Plant = OOPObjectFactory.ShooterClass & OOPObjectFactory.ShooterClass & OOPObjectFactory.TankClass
 export type Zombie =  OOPObjectFactory.ClassicZombie 
@@ -35,7 +39,27 @@ function PVZObjectDataService.GetModel(OOPObject: {}): Model?
     return OOPObject["ModelInstance"] :: Model?  
 end
 
-function PVZObjectDataService.DisconnectOOP(OOPObjectKey: {}) 
+function PVZObjectDataService.DecideObjectAttackerVictim(OOPObjectKey:  Plant | Zombie): Plant | Zombie | nil 
+    -- Purpose: this is a helper function that will help disconnectOOP function decide whether the object was an attacker or a victim 
+    -- "why not just use a common biderectional reference? [Victim] = Attacke AND [Attacker] = [Victim]? because of overwriting keys. 
+    -- if the zombieA attacks peashooter, ok [ZombieA] = peashooter, but if the zombieA goes and attacks a wallnut, it OVERWRITES. 
+    local OOPVictim = ObjectsInCombatModule[OOPObjectKey] ::  Plant | Zombie
+    
+    if OOPObjectKey ~= OOPVictim then 
+        return OOPObjectKey, OOPVictim  
+    end
+    
+    for Attackers, OOPVictims in ObjectsInCombatModule.ObjectsInCombat do 
+        if OOPVictims == OOPObjectKey then 
+            return Attackers, OOPVictim
+        end 
+    end 
+    
+    return nil 
+
+end 
+
+function PVZObjectDataService.DisconnectOOP(OOPObjectKey: Plant | Zombie) 
     
     if not OOPObjectKey then 
         return
@@ -52,6 +76,7 @@ function PVZObjectDataService.DisconnectOOP(OOPObjectKey: {})
         return 
     end 
 
+    ServerSignals.OOPObjectKilledAnotherOOP:Fire(OOPObjectKey)
     OOPModel:Destroy()
     OOPObject = nil 
 
