@@ -13,7 +13,8 @@ CombatData.ZombiesAttacks = {
             ["Size"] = Vector3.new(5, 5, 5),
             ["AttackType"] = "Melee",
             ["AttackName"] = "ClassicZombieBite",
-            ["AttackTime"] = 3,
+            ["PartShape"] = Enum.PartType.Block,
+            ["AttackTime"] = 1,
             ["Damage"] = 10, 
             ["Cooldown"] = 3,  
         }
@@ -23,8 +24,10 @@ CombatData.ZombiesAttacks = {
         ["Bite"] = {
             ["Size"] = Vector3.new(5, 5, 5),
             ["AttackType"] = "Melee",
+            ["Color"] = Color3.fromRGB(85, 255, 0),
             ["AttackName"] = "ConeHeadZombieBite",
-            ["AttackTime"] = 3, 
+            ["PartShape"] = Enum.PartType.Block,
+            ["AttackTime"] = 1, 
             ["Damage"] = 10, 
             ["Cooldown"] = 3,  
         }
@@ -34,9 +37,11 @@ CombatData.ZombiesAttacks = {
         ["Bite"] = {
             ["Size"] = Vector3.new(5, 5, 5),
             ["AttackType"] = "Melee",
+            ["Color"] = Color3.fromRGB(85, 255, 0),
+            ["PartShape"] = Enum.PartType.Block,
             ["AttackName"] = "BucketHeadZombieBite",
             ["Damage"] = 10, 
-            ["AttackTime"] = 3,
+            ["AttackTime"] = 1,
             ["Cooldown"] = 3,  
         }
     },
@@ -49,11 +54,15 @@ CombatData.PlantsAttacks = {
         ["Shoot"] = {
             ["Damage"] = 14, 
             ["Size"] = Vector3.new(4, 4, 4),
+            ["Color"] = Color3.fromRGB(85, 255, 0),
             ["AttackType"] = "Projectile",
             ["RaycastType"] = "Spherecast", 
             ["AttackName"] = "PeashooterShoot",
-            ["Cooldown"] = 3,
-            ["PeaSpeed"] = 5, 
+            ["PartShape"] = Enum.PartType.Ball,
+            ["Cooldown"] = 3, 
+            ["MaxTime"] = 10,
+            ["ProjectileSpeed"] = 35,
+            ["Radius"] = 4, 
         },
 
     }, 

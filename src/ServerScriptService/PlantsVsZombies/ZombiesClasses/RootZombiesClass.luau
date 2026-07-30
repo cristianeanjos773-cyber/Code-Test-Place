@@ -68,7 +68,6 @@ local PlantTag: string = "Plant"
 
 function RootZombiesClass:WalkToHouse() 
     local self = self :: RootZombie
-    print("printing zombie self:", self)
     local ZombieModel = self["ModelInstance"] 
     local ZombieOOPName = self["Name"]
     local AttackClosePlant = self["AttackClosePlant"] :: string

@@ -31,11 +31,12 @@ export type Shooter = typeof(setmetatable({} :: RootPlant & {
     ["Range"]: number,
     ["Class"]: string,
     ["ModelName"]: string,
+    ["AttackCloseZombie"]: string, 
     ["ProjectileName"]: string,  
     ["ModelInstance"]: Model,
     ["FindClosestZombie"]: () -> (Model), 
     ["Initialize"]: (self: Shooter) -> (),
-    ["ShootZombie"]: (self: Shooter) -> (), 
+    ["RequestShootZombie"]: (self: Shooter) -> (), 
     ["SetUpPhyisicalProjectileProperties"]: () -> (), 
     ["CreatePhysicalProjectile"]: () -> (), 
 },
@@ -121,6 +122,7 @@ local OOPAttackRequest = ServerSignals.OOPAttackRequest
 
 function ShooterClass:RequestShootZombie(ClosestZombie: Model)
     local self = self :: Shooter 
+    local AttackCloseZombie = self["AttackCloseZombie"]
 
     if not ClosestZombie or not ClosestZombie:IsA("Model") then 
         warn(`[ShooterClass]: ClosestZombie argument was either not passed or its type is not the one required\n {ClosestZombie.ClassName}`)
@@ -132,15 +134,14 @@ function ShooterClass:RequestShootZombie(ClosestZombie: Model)
         -- it would still request
     end
 
-    OOPAttackRequest:Fire(ClosestZombie)
+    OOPAttackRequest:Fire(self, AttackCloseZombie, ClosestZombie)
 
 end 
 
 function ShooterClass:Initialize() 
     local self = self :: Shooter
     local selfModel = self["ModelInstance"] 
-    local ShootZombie = self:ShootZombie() 
-    
+
     task.spawn(function()
   
         while true do
@@ -149,14 +150,15 @@ function ShooterClass:Initialize()
                 break 
             end
 
-            local ClosestZombie = self:FindClosestZombie()
-            UpdateShooterAim:FireAllClients(selfModel, ClosestZombie)
+            local ClosestZombie = self:FindClosestZombie() 
+            warn(ClosestZombie)
+            --UpdateShooterAim:FireAllClients(selfModel, ClosestZombie)
 
             if ClosestZombie then
-                ShootZombie(ClosestZombie)
+                self:RequestShootZombie(ClosestZombie)
             end 
 
-            task.wait()
+            task.wait(0.5)
 
         end
 

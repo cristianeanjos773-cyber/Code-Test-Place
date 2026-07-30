@@ -21,19 +21,19 @@ local ServerSignals = require(libs.ServerSignals)
 local PVZOBjectDataService = require(script.Parent.Services.PVZObjectDataService)
 
 local function OnObjectDied(OOPObjectKey) 
-PVZOBjectDataService.DisconnectOOP(OOPObjectKey)
+    PVZOBjectDataService.DisconnectOOP(OOPObjectKey)
 end 
 
 local DamageRequest = CombatService.ValidateAttackRequest
 
-local function OnObjectDamaged(OOPObjectKey, AttackRequest) 
-    DamageRequest(OOPObjectKey, AttackRequest)    
+local function OnObjectDamaged(OOPObjectKey, AttackRequest, ObjectTarget) 
+    DamageRequest(OOPObjectKey, AttackRequest, ObjectTarget)    
 end 
 
 ServerSignals.OOPObjectDied:Connect(function(OOPObjectKey) 
     OnObjectDied(OOPObjectKey) 
 end)
  
-ServerSignals.OOPAttackRequest:Connect(function(OOPObjectKey, AttackRequest: string) 
-    OnObjectDamaged(OOPObjectKey,  AttackRequest)
+ServerSignals.OOPAttackRequest:Connect(function(OOPObjectKey, AttackRequest: string, ObjectTarget: Model?) 
+    OnObjectDamaged(OOPObjectKey,  AttackRequest, ObjectTarget)
 end)

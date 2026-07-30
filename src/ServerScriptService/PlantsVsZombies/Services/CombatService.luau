@@ -1,5 +1,7 @@
 --!strict 
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TouchInputService = game:GetService("TouchInputService")
 local Workspace = game:GetService("Workspace")
 --[[
 Purpose: Abstract the logic behind hitbox generating, being able to generate hitboxes and other attacks depending on the data of the attack asked. 
@@ -37,7 +39,11 @@ type AttackStatus = {
     ["Cooldown"]: number,
     ["Transparency"]: number, 
     ["Damage"]: number,
+    ["ProjectileSpeed"]: number, 
+    ["RaycastType"]: number,
+    ["Radius"]: number, 
     ["Size"]: Vector3, 
+    ["PartShape"]: Enum.PartType,
 }
 
 type ObjectsInCombat = {
@@ -50,7 +56,15 @@ local GetObject = PVZObjectDataService.GetObject
 local CombatService = {}
 
 CombatService.RaycastTypes = table.freeze({
-    ["Spherecast"] = workspace:Spherecast(),
+
+    ["Raycast"] = function(Position: Vector3, ...: any) 
+       return workspace:Raycast(Position, ...)
+    end,
+    
+    ["Spherecast"] = function(Position: Vector3, ...: any) 
+       return workspace:Spherecast(Position, ...)
+    end,
+
 }) -- this is a dispatch table i'll be usiing to determine wihich
 -- raycast function the SetUpRayCast should call instead of throwing 1000 ifs elseifs  
 -- and it will also return the results and make the actual raycast method 
@@ -119,13 +133,91 @@ function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: Attac
         task.wait(AttackTime)
     end 
     
-end 
+end    
 
-function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: AttackStatus) 
+local PlantFolder = workspace:FindFirstChild("PlantsVsZombies"):FindFirstChild("PlantsFolder") :: Folder 
+local PlantsFolderDescArr = PlantFolder:GetDescendants()
+local raycastParams = RaycastParams.new()
+raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+raycastParams.FilterDescendantsInstances = PlantsFolderDescArr 
+
+function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: AttackStatus, ObjectTarget: Model) 
+    local ObjectModel = OOPObject["ModelInstance"]
+    local ObjectCastType = AttackStatus["RaycastType"]
+    local ProjectileSpeed = AttackStatus["ProjectileSpeed"]
+    local ProjectileRadius = AttackStatus["Radius"]
+    local MaxDuration = AttackStatus["MaxTime"]
+
+    local ObjectPos = ObjectModel.PrimaryPart.Position 
+    local TargetumanoidRootPart = ObjectTarget:FindFirstChild("HumanoidRootPart") :: Part  
     
-    RunService.Heartbeat:Connect(function(DeltaTime)
+    local TargetPos = TargetumanoidRootPart.Position 
+    local TargetVelocity = TargetumanoidRootPart.AssemblyLinearVelocity
 
+    local Distance = (ObjectPos - TargetPos).Magnitude
+    local TravelTime = Distance / ProjectileSpeed 
+
+    local PredictedTargetPos = TargetPos + (TargetVelocity * TravelTime) 
+
+    local ProjectileDirection = (PredictedTargetPos - ObjectPos).Unit
+    local ProjectileVelocity = ProjectileDirection * ProjectileSpeed 
+    local TimeElapsed = 0 
+
+    local HeartbeatConn 
+    local CurrentProjectilePos = ObjectPos
+
+    task.spawn(function()
+        
+        HeartbeatConn = RunService.Heartbeat:Connect(function(DeltaTime)
+            TimeElapsed = TimeElapsed + DeltaTime
+
+            if TimeElapsed >= MaxDuration then
+                HeartbeatConn:Disconnect()
+                HeartbeatConn = nil  
+                return
+            end
+
+            local Displacement = ProjectileVelocity * DeltaTime
+
+            if Displacement.Magnitude <= 0 then
+                return
+            end
+          
+            local CastFunction =  CombatService.RaycastTypes[ObjectCastType] :: (Origin: Vector3, Radius: number, Displacement: Vector3, raycastParams: RaycastParams) -> RaycastResult? 
+            local RayCastResult = CastFunction(CurrentProjectilePos, ProjectileRadius, Displacement, raycastParams) 
+            warn(`[CombatService]: RayCastResult print: ({RayCastResult})`)
+            
+            if RayCastResult then
+                
+                HeartbeatConn:Disconnect()
+                local TargetModel = RayCastResult.Instance:FindFirstAncestorOfClass("Model")
+                
+                warn("RaycastResult found:", RayCastResult.Instance)
+               
+                local IsAPlayer = Players:GetPlayerFromCharacter(TargetModel)
+
+                if IsAPlayer then 
+                    return
+                end 
+
+                local ProjectileDamage = AttackStatus["Damage"]
+                local TargetOOPObject = PVZObjectDataService.GetObject(TargetModel) :: Plant | Zombie
+                warn("HGEYY", TargetModel, "Instance:", RayCastResult.Instance)
+                
+                if not TargetOOPObject then
+                    warn(`[CombatService]: not found TargetOOP: {TargetOOPObject}`)
+                    return
+                end
+
+                CombatService.ApplyDamageOnObject(TargetOOPObject, ProjectileDamage)
+                CombatService.CreatePhysicalHitbox(AttackStatus, Displacement, MaxDuration)
+
+            else
+                CurrentProjectilePos = CurrentProjectilePos + Displacement
+            end 
+        end)
     end)
+
 end
 
 CombatService.AttackTypesFunctions = {
@@ -135,6 +227,7 @@ CombatService.AttackTypesFunctions = {
 
 
 function CombatService.ApplyDamageOnObject(OOPObjectHit: Plant | Zombie, Damage: number) 
+    print("printing OOPobject that was hit:", OOPObjectHit)
     OOPObjectHit:TakeDamage(Damage)
 end
 
@@ -143,15 +236,27 @@ function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPart
 
     HitboxPart.Name = PartStatus["AttackName"]
     HitboxPart.Transparency = PartStatus["Transparency"]
-    HitboxPart.Color = PartStatus["Color"]
     HitboxPart.Size = PartStatus["Size"]
+    HitboxPart.Shape = PartStatus["PartShape"]
     HitboxPart.Anchored = PartStatus["Anchored"]
     HitboxPart.CanCollide = PartStatus["CanCollide"]
 
     HitboxPart.CFrame = HitboxPartPosition
     HitboxPart.Parent = workspace
 
-    task.wait(1)
+    task.wait(AttackTime)
+
+    HitboxPart:Destroy()
+
+    if typeof(HitboxPartPosition) == "Vector3" then
+        HitboxPart.Position = HitboxPartPosition
+    elseif typeof(HitboxPartPosition) == "CFrame" then
+        HitboxPart.CFrame = HitboxPartPosition
+    end
+
+    HitboxPart.Parent = workspace
+
+    task.wait(AttackTime)
 
     HitboxPart:Destroy()
 end
@@ -161,7 +266,7 @@ end
    
 end]]
 
-function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRequest: string)
+function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRequest: string, ObjectTarget: Model?)
     --warn("VALIDATION REACHED")
     if not OOPObject then 
         --warn("KEINE OOP")
@@ -187,10 +292,6 @@ function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRe
     local AttackRequestedName = AttackRequestedStatus["AttackName"] 
     local AttackType = AttackRequestedStatus["AttackType"]
 
-    --[[the reason why I use an AttackName is because if we didnt, we'd have to use the whole AttackDataDict
-       In the CooldownService, which would be unnecessary and less readable, a string is lighter than a dictionary, having only some bytes
-       But the main puporse is to make it more readable. 
-    ]]
 
     if IsCooldownOn(OOPObject, AttackRequestedName) == nil then 
         warn("WE CREATED ANOTHER TBLE!")
@@ -211,7 +312,7 @@ function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRe
 
     StartCooldown(OOPObject, AttackRequestedName, AttackCooldown)
     --warn(AttackType, CombatService.AttackTypesFunctions["Melee"])
-    CombatService.AttackTypesFunctions[AttackType](OOPObject, AttackRequestedStatus)
+    CombatService.AttackTypesFunctions[AttackType](OOPObject, AttackRequestedStatus, ObjectTarget)
 
 
 end
