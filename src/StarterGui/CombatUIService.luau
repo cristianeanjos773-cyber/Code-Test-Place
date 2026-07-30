@@ -4,8 +4,13 @@
 Purpose: To take care of creating UIs
 ]]
 
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local StarterGUIScripts = script.Parent
+local SFXService = require(StarterGUIScripts:WaitForChild("SFXService"))
+local GameSFXs = require(StarterGUIScripts:WaitForChild("GameSFXs"))
+
 local ReplicatedStorageFolder = ReplicatedStorage:WaitForChild("ReplicatedStorage")
 local Remotes = ReplicatedStorageFolder:WaitForChild("Remotes")
 local OOPObjectDamaged = Remotes:WaitForChild("OOPObjectDamaged") :: RemoteEvent 
@@ -49,22 +54,36 @@ end
 
 CombatUIService.UITypes = table.freeze({
     
-    ["BillboardGui"] = function(PartPosition: Vector3, Damage: number): BillboardGui 
+    ["BillboardGui"] = function(PartPosition: Vector3, Damage: number, AttackName: string): BillboardGui 
         local BillBoardGui = Instance.new("BillboardGui")
         local Frame =  Instance.new("Frame")
         local UIPart = Instance.new("Part")
         local DamageLabel = Instance.new("TextLabel")
+        local SoundID = GameSFXs[AttackName] 
 
         UIPart.Position = PartPosition
-
         UIPart.Parent = workspace 
+
         BillBoardGui.Parent = UIPart  
         BillBoardGui.Size = UDim2.fromScale(5, 5)
-        Frame.Parent = BillBoardGui
+
+        Frame.Parent = BillBoardGui 
         Frame.BackgroundTransparency = 1 
         Frame.Size = UDim2.fromScale(1, 1) 
-        DamageLabel.Parent = Frame
         
+        DamageLabel.Parent = Frame
+     
+        local DamageSoundProperties = {
+            ["Parent"] = UIPart, 
+            ["Name"] = "DamageSound", 
+            ["SoundId"] = SoundID,
+        }
+
+        local DamageSound = SFXService.SpawnSFX(DamageSoundProperties)
+
+        DamageSound:Play()
+
+        warn("IsDamageSoundPlaying?", DamageSound.IsPlaying, DamageSound.Parent)
 
         CombatUIService.SetUIPartsProperties(UIPart)
         CombatUIService.SetTextProperties(DamageLabel, Damage)
@@ -90,7 +109,7 @@ CombatUIService.UITypes = table.freeze({
 })
 
 function CombatUIService.SpawnUI() 
-    OOPObjectDamaged.OnClientEvent:Connect(function(ZombieRootPos: Vector3, ObjectHP: number, ObjectDamage: number, UIString: string)
+    OOPObjectDamaged.OnClientEvent:Connect(function(ZombieRootPos: Vector3, ObjectHP: number, ObjectDamage: number, UIString: string, AttackName: string)
 
         if not ZombieRootPos then 
             return
@@ -106,7 +125,7 @@ function CombatUIService.SpawnUI()
             return
         end
 
-        ChosenUIfunc(ZombieRootPos, ObjectDamage)
+        ChosenUIfunc(ZombieRootPos, ObjectDamage, AttackName)
 
     end)
 end 

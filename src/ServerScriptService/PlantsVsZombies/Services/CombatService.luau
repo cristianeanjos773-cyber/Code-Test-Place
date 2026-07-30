@@ -1,8 +1,5 @@
 --!strict 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local TouchInputService = game:GetService("TouchInputService")
-local Workspace = game:GetService("Workspace")
+
 --[[
 Purpose: Abstract the logic behind hitbox generating, being able to generate hitboxes and other attacks depending on the data of the attack asked. 
 The Root Types are here because we dont need to call the actual classes as ClassicZombies or 
@@ -16,6 +13,9 @@ and should also be validated with CooldownService
 
 ]]
 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
 local Services = script.Parent
 local PVZFolder = Services.Parent
 local PVZFDataFolder = PVZFolder.PVZData
@@ -23,6 +23,7 @@ local PVZFDataFolder = PVZFolder.PVZData
 local CombatData = require(PVZFDataFolder.CombatData)
 local CooldownService = require(Services.CooldownService)
 local PVZObjectDataService = require(Services.PVZObjectDataService)
+local VisualHitBoxBusEvent = require(Services.VisualHitboxBusEvent)
 --local ObjectsInCombatModule = require(PVZFDataFolder.ObjectsInCombatModule)
 
 
@@ -147,6 +148,8 @@ function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: Att
     local ProjectileSpeed = AttackStatus["ProjectileSpeed"]
     local ProjectileRadius = AttackStatus["Radius"]
     local MaxDuration = AttackStatus["MaxTime"]
+    local ProjectileName = AttackStatus["AttackName"] 
+    
 
     local ObjectPos = ObjectModel.PrimaryPart.Position 
     local TargetumanoidRootPart = ObjectTarget:FindFirstChild("HumanoidRootPart") :: Part  
@@ -208,8 +211,8 @@ function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: Att
                     warn(`[CombatService]: not found TargetOOP: {TargetOOPObject}`)
                     return
                 end
-
-                CombatService.ApplyDamageOnObject(TargetOOPObject, ProjectileDamage)
+                
+                CombatService.ApplyDamageOnObject(TargetOOPObject, ProjectileDamage, ProjectileName)
                 --CombatService.CreatePhysicalHitbox(AttackStatus, Displacement, MaxDuration)
 
             else
@@ -226,9 +229,9 @@ CombatService.AttackTypesFunctions = {
 }
 
 
-function CombatService.ApplyDamageOnObject(OOPObjectHit: Plant | Zombie, Damage: number) 
+function CombatService.ApplyDamageOnObject(OOPObjectHit: Plant | Zombie, Damage: number, AttackName: string) 
     print("printing OOPobject that was hit:", OOPObjectHit)
-    OOPObjectHit:TakeDamage(Damage)
+    OOPObjectHit:TakeDamage(Damage, AttackName)
 end
 
 --[[function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPartPosition: CFrame, AttackTime: number) 
@@ -268,6 +271,7 @@ end]]
 
 function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRequest: string, ObjectTarget: Model?)
     --warn("VALIDATION REACHED")
+    
     if not OOPObject then 
         --warn("KEINE OOP")
         return
@@ -312,8 +316,12 @@ function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRe
 
     StartCooldown(OOPObject, AttackRequestedName, AttackCooldown)
     --warn(AttackType, CombatService.AttackTypesFunctions["Melee"])
-    CombatService.AttackTypesFunctions[AttackType](OOPObject, AttackRequestedStatus, ObjectTarget)
 
+    local ObjectModel = OOPObject["ModelInstance"]
+    local PrimaryPartCFrame = ObjectModel.PrimaryPart.CFrame 
+
+    CombatService.AttackTypesFunctions[AttackType](OOPObject, AttackRequestedStatus, ObjectTarget)
+    VisualHitBoxBusEvent.SendVisualHitboxToClient(AttackRequestedName, PrimaryPartCFrame)
 
 end
 

@@ -133,7 +133,7 @@ function RootZombiesClass:IsAlive(): boolean
 
 end 
 
-function RootZombiesClass:TakeDamage(Damage: number) 
+function RootZombiesClass:TakeDamage(Damage: number, AttackName: string) 
     local self = self :: RootZombie
     local ZombieHP = self["HP"] 
     local ZombieModel = self["ModelInstance"]
@@ -144,7 +144,7 @@ function RootZombiesClass:TakeDamage(Damage: number)
     local FinalSelfHP = ZombieHP - FinalDamageResult
     
     self["HP"] = FinalSelfHP
-    OOPDamagedRemote:FireAllClients(ZombieRootPos, ZombieHP, FinalDamageResult, "BillboardGui")
+    OOPDamagedRemote:FireAllClients(ZombieRootPos, ZombieHP, FinalDamageResult, "BillboardGui", AttackName)
 
     if not self:IsAlive() then
         self:ZombieDie() 
