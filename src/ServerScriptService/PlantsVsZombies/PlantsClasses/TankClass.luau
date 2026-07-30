@@ -30,7 +30,7 @@ TankClass
 )) 
 
 TankClass.TankShrinkageChanges = {
-
+ 
     ["Stage1"] = {
         ["EyesColor"] = Color3.fromRGB(0, 255, 234),
     },

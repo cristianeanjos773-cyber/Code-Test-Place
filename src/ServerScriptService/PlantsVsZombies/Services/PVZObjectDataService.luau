@@ -11,7 +11,7 @@ local OOPFolder = PVZFolder.OOP
 
 local PVZObjectData = require(PlantsData.PVZObjectData)
 local OOPObjectFactory = require(OOPFolder.OOPObjectFactory)
-local ObjectsInCombatModule = require(PlantsData.ObjectsInCombatModule)
+--local ObjectsInCombatModule = require(PlantsData.ObjectsInCombatModule)
 
 export type Plant = OOPObjectFactory.ShooterClass & OOPObjectFactory.ShooterClass & OOPObjectFactory.TankClass
 export type Zombie =  OOPObjectFactory.ClassicZombie 
@@ -39,25 +39,25 @@ function PVZObjectDataService.GetModel(OOPObject: {}): Model?
     return OOPObject["ModelInstance"] :: Model?  
 end
 
-function PVZObjectDataService.DecideObjectAttackerVictim(OOPObjectKey:  Plant | Zombie): Plant | Zombie | nil 
+--[[function PVZObjectDataService.DecideObjectAttackerVictim(OOPObjectKey:  Plant | Zombie): Plant | Zombie | nil 
     -- Purpose: this is a helper function that will help disconnectOOP function decide whether the object was an attacker or a victim 
     -- "why not just use a common biderectional reference? [Victim] = Attacke AND [Attacker] = [Victim]? because of overwriting keys. 
     -- if the zombieA attacks peashooter, ok [ZombieA] = peashooter, but if the zombieA goes and attacks a wallnut, it OVERWRITES. 
-    local OOPVictim = ObjectsInCombatModule[OOPObjectKey] ::  Plant | Zombie
+    local OOPVictim = ObjectsInCombatModule.ObjectsInCombat[OOPObjectKey] ::  Plant | Zombie
     
-    if OOPObjectKey ~= OOPVictim then 
+    if OOPVictim ~= nil then 
         return OOPObjectKey, OOPVictim  
     end
     
     for Attackers, OOPVictims in ObjectsInCombatModule.ObjectsInCombat do 
         if OOPVictims == OOPObjectKey then 
-            return Attackers, OOPVictim
+            return Attackers, OOPObjectKey
         end 
     end 
     
     return nil 
 
-end 
+end ]] -- this is commented because as of now it is not useful, its just saved here INCASE (probably not I use it)
 
 function PVZObjectDataService.DisconnectOOP(OOPObjectKey: Plant | Zombie) 
     
@@ -76,7 +76,13 @@ function PVZObjectDataService.DisconnectOOP(OOPObjectKey: Plant | Zombie)
         return 
     end 
 
-    ServerSignals.OOPObjectKilledAnotherOOP:Fire(OOPObjectKey)
+    --local DataOrderToSend = PVZObjectDataService.DecideObjectAttackerVictim(OOPObjectKey)
+
+    --[[if not DataOrderToSend then 
+        return 
+    end]]
+            
+   -- ServerSignals.OOPObjectKilledAnotherOOP:Fire(DataOrderToSend)
     OOPModel:Destroy()
     OOPObject = nil 
 

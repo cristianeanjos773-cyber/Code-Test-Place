@@ -38,4 +38,4 @@ local ZombiesData = {
 
 
 }
-return ZombiesData 
+return table.freeze(ZombiesData)

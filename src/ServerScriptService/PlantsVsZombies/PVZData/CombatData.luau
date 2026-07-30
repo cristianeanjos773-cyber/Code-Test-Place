@@ -1,5 +1,8 @@
 --[[
 Purpose: to store the attack data being able to make the data readable by the combat service, making hitbox and attack managing data driven. 
+
+REMINDER: EVERY STATUS RELATED TO THE GAME'S COMBAT SHOULD BE PUT HERE, NOT IN THE PLANTS DATA OR ZOMBIES DATA.
+
 ]]
 local CombatData = {}
 
@@ -44,12 +47,16 @@ CombatData.PlantsAttacks = {
     
     ["Peashooter"] = {
         ["Shoot"] = {
+            ["Damage"] = 14, 
             ["Size"] = Vector3.new(4, 4, 4),
             ["AttackType"] = "Projectile",
+            ["RaycastType"] = "Spherecast", 
             ["AttackName"] = "PeashooterShoot",
-            ["Cooldown"] = 3, 
-        }, 
+            ["Cooldown"] = 3,
+            ["PeaSpeed"] = 5, 
+        },
+
     }, 
 }
 
-return CombatData 
+return table.freeze(CombatData)

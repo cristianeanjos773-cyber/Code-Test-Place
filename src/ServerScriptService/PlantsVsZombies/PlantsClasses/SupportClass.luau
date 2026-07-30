@@ -1,6 +1,5 @@
 --!strict 
 local Debris = game:GetService("Debris")
-local PointsService = game:GetService("PointsService")
 local PlantsClassFolder = script.Parent
 local PVZFolder = script.Parent.Parent
 --local PVZDataFolder = PVZFolder.PVZData
@@ -186,8 +185,8 @@ function SupportClass:GenerateSun()
     local SunSpawnPosition = CenterFacePos + Vector3.new(0, 4, 0)
     
     if not SpawnSunCooldown or typeof(SpawnSunCooldown) ~= "number" then 
-         warn(`[PVZPlayerDataService]: check the cooldown number argument, the type:{SpawnSunCooldown}`)
-         return
+        warn(`[PVZPlayerDataService]: check the cooldown number argument, the type:{SpawnSunCooldown}`)
+        return
     end
 
     SupportClass.CreatePhysicalSun(SunSpawnPosition)
@@ -206,8 +205,6 @@ function SupportClass:Initialize()
     local GenerateSuns = SupportClass.SupportActions["GenerateSuns"]
     
     CooldownService.StartCooldown(self, SupportClass.SupportActions["GenerateSuns"], SpawnSunCooldown)
-
-    warn(self, "plant init has been called")
 
     task.spawn(function()
 

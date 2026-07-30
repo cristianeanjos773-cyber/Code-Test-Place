@@ -44,6 +44,7 @@ function RootZombiesClass.new(StatsTable: {[string]: string | number}): RootZomb
 
     for PropertyName, PropertyValue in StatsTable do 
         self[PropertyName] = PropertyValue 
+        --warn("First attempt to check self: ", self)
     end 
 
     return self :: RootZombie 
@@ -52,6 +53,8 @@ end
 
 
 function RootZombiesClass:AttackPlant(ActionWhenTouched: string) 
+   
+
     local self = self :: RootZombie 
     local ZombieModel = self["ModelInstance"]
     local ZombieHumanoid = ZombieModel:WaitForChild("Humanoid") :: Humanoid
@@ -65,12 +68,14 @@ local PlantTag: string = "Plant"
 
 function RootZombiesClass:WalkToHouse() 
     local self = self :: RootZombie
+    print("printing zombie self:", self)
     local ZombieModel = self["ModelInstance"] 
     local ZombieOOPName = self["Name"]
     local AttackClosePlant = self["AttackClosePlant"] :: string
     local ZombieHumanoid = ZombieModel:WaitForChild("Humanoid") :: Humanoid
     local ZombieHumanoidRoot = ZombieModel:WaitForChild("HumanoidRootPart") :: Part
-    warn(ZombieModel, ZombieHumanoid)
+
+    ZombieHumanoid.WalkSpeed = 7 
     ZombieHumanoid:Move(Vector3.new(0,0,1))
 
     task.spawn(function() 
@@ -97,14 +102,21 @@ function RootZombiesClass:WalkToHouse()
         end
         
         task.spawn(function()
-            while PlantModel do 
+            while true do -- THE OOPMODEL REPRESENTS THE PHYSICAL BODY OF THE OOP OBJECCT
+                -- IF ITS DESTROYED, IT MEANS THAT  THE OOP IS **DEAD**
+               
+                if PlantModel == nil or PlantModel.Parent == nil then 
+                    self:WalkToHouse()
+                    break 
+                end  
+
                 self:AttackPlant(AttackClosePlant)
                 task.wait(3)
+
             end 
         end)
 
     end)
-
 end
 
 

@@ -1,16 +1,18 @@
 local PlantsData = {
     
     ["Peashooter"] = {
-        ["Damage"] = 20, 
-        ["HP"] = 100, 
-        ["MaxHP"] = 100, 
-        ["Defense"] = 20,
+        ["HP"] = 50, 
+        ["MaxHP"] = 50, 
+        ["Defense"] = 3,
+        ["Range"] = 20,
         ["Name"] = "Peashooter",
-        ["Class"] = "Shooter",
+    ["Class"] = "Shooter",
         ["Team"] = "Plants",
         ["SunPrice"] = 100, 
         ["SpawnCooldown"] = 20,
     },
+
+    ["SnowPeashooter"] = {},
 
     ["Wallnut"] = {
         ["HP"] = 400,

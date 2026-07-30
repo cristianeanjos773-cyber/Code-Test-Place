@@ -1,4 +1,6 @@
 --!strict 
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 --[[
 Purpose: Abstract the logic behind hitbox generating, being able to generate hitboxes and other attacks depending on the data of the attack asked. 
 The Root Types are here because we dont need to call the actual classes as ClassicZombies or 
@@ -6,6 +8,9 @@ TankClasses type.
 
 NOTE REMINDER: The & symbol does not mean the OOPOBject can be both root plant and root zombies, its just a trick to deceive the type checking.
 it doesnt reperesnt the actual types of the OOOP Objects. 
+
+NOTE2: EVERY request related to combat should be asked to this combat service thorough the server signalsHandler server script 
+and should also be validated with CooldownService 
 
 ]]
 
@@ -16,17 +21,23 @@ local PVZFDataFolder = PVZFolder.PVZData
 local CombatData = require(PVZFDataFolder.CombatData)
 local CooldownService = require(Services.CooldownService)
 local PVZObjectDataService = require(Services.PVZObjectDataService)
+--local ObjectsInCombatModule = require(PVZFDataFolder.ObjectsInCombatModule)
+
 
 export type Plant = PVZObjectDataService.Plant
 export type Zombie = PVZObjectDataService.Zombie
 
-
 type AttackStatus = {
     ["Size"]: Vector3, 
+    ["Color"]: Color3, 
+    ["Anchored"]: boolean, 
+    ["CanCollide"]: boolean,
     ["AttackType"]: string,
     ["AttackName"]: string, 
     ["Cooldown"]: number,
+    ["Transparency"]: number, 
     ["Damage"]: number,
+    ["Size"]: Vector3, 
 }
 
 type ObjectsInCombat = {
@@ -36,21 +47,19 @@ type ObjectsInCombat = {
 local IsCooldownOn = CooldownService.IsCooldownOn
 local StartCooldown = CooldownService.StartCooldown 
 local GetObject = PVZObjectDataService.GetObject
-
 local CombatService = {}
 
-function CombatService.SetUpRaycast() 
+CombatService.RaycastTypes = table.freeze({
+    ["Spherecast"] = workspace:Spherecast(),
+}) -- this is a dispatch table i'll be usiing to determine wihich
+-- raycast function the SetUpRayCast should call instead of throwing 1000 ifs elseifs  
+-- and it will also return the results and make the actual raycast method 
 
-end
 
-function CombatService.ObjectsInCombatHandler(AttackerOOPObject: Plant | Zombie, OOPObjectVictim: Plant | Zombie) 
-    CombatService.ObjectsInCombat[AttackerOOPObject] = OOPObjectVictim
-
-end 
 
 function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: AttackStatus) 
-    local ZombieModel = OOPObject["ModelInstance"] :: Model 
-    local HumanoidRootPart = ZombieModel:FindFirstChild("HumanoidRootPart") :: Part
+    local ObjectModel = OOPObject["ModelInstance"] :: Model 
+    local HumanoidRootPart = ObjectModel:FindFirstChild("HumanoidRootPart") :: Part
     local Distance = 3
     
     local HitboxPosition = CFrame.new(HumanoidRootPart.Position + HumanoidRootPart.CFrame.LookVector * Distance)
@@ -93,28 +102,34 @@ function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: Attac
                 continue
              end 
              
-            if ZombieModel == ObjectHitModel then 
+            if ObjectModel == ObjectHitModel then 
                 continue 
             end
 
-            if ObjectHitModel == ZombieModel then 
+            if ObjectHitModel == ObjectModel then 
                 continue 
             end 
 
             CombatService.ApplyDamageOnObject(OOPObjectHit, AttackDamage)
+            CombatService.CreatePhysicalHitbox(AttackStatus, HitboxPosition, AttackTime)
             HitModels[ObjectHitModel] = true 
         
 
         end
         task.wait(AttackTime)
     end 
-    CombatService.CreatePhysicalHitbox(AttackStatus, HitboxPosition, AttackTime)
+    
 end 
 
+function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: AttackStatus) 
+    
+    RunService.Heartbeat:Connect(function(DeltaTime)
 
+    end)
+end
 
 CombatService.AttackTypesFunctions = {
-    ["Projectile"] = CombatService.SetUpRaycast,
+    ["Projectile"] = CombatService.SetUpRayCast,
     ["Melee"] = CombatService.SetUpMelee, 
 }
 
@@ -125,22 +140,26 @@ end
 
 function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPartPosition: CFrame, AttackTime: number) 
     local HitboxPart = Instance.new("Part")
+
     HitboxPart.Name = PartStatus["AttackName"]
-    HitboxPart.Transparency = 0.5
-    HitboxPart.Color = Color3.fromRGB(255, 1, 1)
-    HitboxPart.CFrame = HitboxPartPosition
+    HitboxPart.Transparency = PartStatus["Transparency"]
+    HitboxPart.Color = PartStatus["Color"]
     HitboxPart.Size = PartStatus["Size"]
-    HitboxPart.Anchored = true
-    HitboxPart.CanCollide = false 
+    HitboxPart.Anchored = PartStatus["Anchored"]
+    HitboxPart.CanCollide = PartStatus["CanCollide"]
+
+    HitboxPart.CFrame = HitboxPartPosition
     HitboxPart.Parent = workspace
+
     task.wait(1)
+
     HitboxPart:Destroy()
 end
 
 
 --[[function CombatService.CreateAttackHitbox(OOPObject: Plant & Zombie, AttackType: string)   
    
-end ]]
+end]]
 
 function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRequest: string)
     --warn("VALIDATION REACHED")
