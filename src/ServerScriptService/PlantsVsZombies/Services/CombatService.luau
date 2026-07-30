@@ -125,7 +125,7 @@ function CombatService.SetUpMelee(OOPObject: Plant & Zombie, AttackStatus: Attac
             end 
 
             CombatService.ApplyDamageOnObject(OOPObjectHit, AttackDamage)
-            CombatService.CreatePhysicalHitbox(AttackStatus, HitboxPosition, AttackTime)
+            --CombatService.CreatePhysicalHitbox(AttackStatus, HitboxPosition, AttackTime)
             HitModels[ObjectHitModel] = true 
         
 
@@ -210,7 +210,7 @@ function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: Att
                 end
 
                 CombatService.ApplyDamageOnObject(TargetOOPObject, ProjectileDamage)
-                CombatService.CreatePhysicalHitbox(AttackStatus, Displacement, MaxDuration)
+                --CombatService.CreatePhysicalHitbox(AttackStatus, Displacement, MaxDuration)
 
             else
                 CurrentProjectilePos = CurrentProjectilePos + Displacement
@@ -231,7 +231,7 @@ function CombatService.ApplyDamageOnObject(OOPObjectHit: Plant | Zombie, Damage:
     OOPObjectHit:TakeDamage(Damage)
 end
 
-function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPartPosition: CFrame, AttackTime: number) 
+--[[function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPartPosition: CFrame, AttackTime: number) 
     local HitboxPart = Instance.new("Part")
 
     HitboxPart.Name = PartStatus["AttackName"]
@@ -259,7 +259,7 @@ function CombatService.CreatePhysicalHitbox(PartStatus: AttackStatus, HitboxPart
     task.wait(AttackTime)
 
     HitboxPart:Destroy()
-end
+end]]
 
 
 --[[function CombatService.CreateAttackHitbox(OOPObject: Plant & Zombie, AttackType: string)   

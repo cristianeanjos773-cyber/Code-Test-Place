@@ -6,6 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
 
 local libs = ReplicatedStorageFolder.libs
+local Remotes = ReplicatedStorageFolder.Remotes 
+local OOPDamagedRemote = Remotes.OOPObjectDamaged :: RemoteEvent 
 local CombatData = require(PlantsVSZombiesFolder.PVZData.CombatData)
 local ServerSignals = require(libs.ServerSignals)
 local OOPObjectDied = ServerSignals.OOPObjectDied
@@ -133,13 +135,17 @@ end
 
 function RootZombiesClass:TakeDamage(Damage: number) 
     local self = self :: RootZombie
-    local SelfHP = self["HP"] 
+    local ZombieHP = self["HP"] 
+    local ZombieModel = self["ModelInstance"]
+    local ZombieHumanoidRootPart = ZombieModel:FindFirstChild("HumanoidRootPart") :: Part
+    local ZombieRootPos = ZombieHumanoidRootPart.Position
 
     local FinalDamageResult = math.max(Damage - self["Defense"], 0)
-    local FinalSelfHP = SelfHP - FinalDamageResult
+    local FinalSelfHP = ZombieHP - FinalDamageResult
     
     self["HP"] = FinalSelfHP
-    
+    OOPDamagedRemote:FireAllClients(ZombieRootPos, ZombieHP, FinalDamageResult, "BillboardGui")
+
     if not self:IsAlive() then
         self:ZombieDie() 
     end

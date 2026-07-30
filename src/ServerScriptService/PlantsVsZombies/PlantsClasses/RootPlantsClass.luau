@@ -1,7 +1,8 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
-local OOPObjectDamaged = ReplicatedStorageFolder.Remotes.OOPObjectDamaged :: RemoteEvent
+local HPBarUpdater = ReplicatedStorageFolder.Remotes.HPBarUpdater :: RemoteEvent
+
 
 local libs = ReplicatedStorageFolder.libs
 
@@ -50,9 +51,9 @@ end
 
 function PlantsClass:IsAlive(): boolean  
     local self = self :: RootPlant
-    local SelfHP = self["HP"] 
+    local PlantHP = self["HP"] 
 
-    if SelfHP > 0 then 
+    if PlantHP > 0 then 
         return true
     else
         return false 
@@ -62,17 +63,17 @@ end
 
 function PlantsClass:TakeDamage(Damage: number) 
     local self = self :: RootPlant
-    local SelfHP = self["HP"] 
-    local SelfMaxHP = self["MaxHP"]
-    local SelfModel = self["ModelInstance"] 
+    local PlantHP = self["HP"] 
+    local PlantMaxHP = self["MaxHP"]
+    local PlantModel = self["ModelInstance"] 
     
     local FinalDamageResult = math.max(Damage - self["Defense"], 0)
-    local FinalSelfHP = SelfHP - FinalDamageResult
+    local FinalSelfHP = PlantHP - FinalDamageResult
     
     self["HP"] = FinalSelfHP
     warn("ROOTS PLANTS DAMAGE DEBUG", self["HP"])
 
-    OOPObjectDamaged:FireAllClients(SelfModel, SelfHP, SelfMaxHP)
+    HPBarUpdater:FireAllClients(PlantModel, PlantHP, PlantMaxHP)
 
     
     if self["HP"] <= 0 then
