@@ -1,5 +1,3 @@
-local Debris = game:GetService("Debris")
---local StarterGUIscripts = script.Parent
 
 type SetUpProperties = {
     ["SoundId"]: string?, 
@@ -16,7 +14,6 @@ function SFXService.SetUPSFXProperties(SoundInstance: Sound, SetUpPropeties: Set
     task.spawn(function()
     
         for Properties, Values in SetUpPropeties do 
-            warn("PRINTING ASKED PROPERTIES", Properties, " : ", Values)
            
             if not SoundInstance[Properties] then
                 continue
