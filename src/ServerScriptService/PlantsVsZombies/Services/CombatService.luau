@@ -188,7 +188,7 @@ function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: Att
           
             local CastFunction =  CombatService.RaycastTypes[ObjectCastType] :: (Origin: Vector3, Radius: number, Displacement: Vector3, raycastParams: RaycastParams) -> RaycastResult? 
             local RayCastResult = CastFunction(CurrentProjectilePos, ProjectileRadius, Displacement, raycastParams) 
-            warn(`[CombatService]: RayCastResult print: ({RayCastResult})`)
+            --warn(`[CombatService]: RayCastResult print: ({RayCastResult})`)
             
             if RayCastResult then
                 
@@ -318,10 +318,13 @@ function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRe
     --warn(AttackType, CombatService.AttackTypesFunctions["Melee"])
 
     local ObjectModel = OOPObject["ModelInstance"]
-    local PrimaryPartCFrame = ObjectModel.PrimaryPart.CFrame 
+    local ClosestTarget = OOPObject["ClosestTarget"]
+
+    local ClosestTargetCFrame = ClosestTarget.PrimaryPart.CFrame 
+    local PrimaryPartCFrame = ObjectModel.PrimaryPart.CFrame
 
     CombatService.AttackTypesFunctions[AttackType](OOPObject, AttackRequestedStatus, ObjectTarget)
-    VisualHitBoxBusEvent.SendVisualHitboxToClient(AttackRequestedName, PrimaryPartCFrame)
+    VisualHitBoxBusEvent.SendVisualHitboxToClient(AttackRequestedName, PrimaryPartCFrame, PrimaryPartCFrame)
 
 end
 

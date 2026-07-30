@@ -5,8 +5,8 @@ local VisualHitboxRemote = Remotes.VisualHitboxRemote :: RemoteEvent
 
 local VisualHitboxBusEvent = {}
 
-function VisualHitboxBusEvent.SendVisualHitboxToClient(AttackName: string, HitboxCFrame: CFrame) 
-    VisualHitboxRemote:FireAllClients(AttackName, HitboxCFrame)
+function VisualHitboxBusEvent.SendVisualHitboxToClient(AttackName: string, HitboxCFrame: CFrame, EndCFrame: CFrame) 
+    VisualHitboxRemote:FireAllClients(AttackName, HitboxCFrame, EndCFrame)
 end 
 
 return VisualHitboxBusEvent 

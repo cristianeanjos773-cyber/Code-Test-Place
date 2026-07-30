@@ -34,6 +34,7 @@ export type Shooter = typeof(setmetatable({} :: RootPlant & {
     ["AttackCloseZombie"]: string, 
     ["ProjectileName"]: string,  
     ["ModelInstance"]: Model,
+    ["ClosestTarget"]: Model?, 
     ["FindClosestZombie"]: () -> (Model), 
     ["Initialize"]: (self: Shooter) -> (),
     ["RequestShootZombie"]: (self: Shooter) -> (), 
@@ -46,17 +47,6 @@ ShooterClass
 setmetatable(ShooterClass, {__index = RootPlantsClass})
 ShooterClass.__index = ShooterClass
 
--- THIS Stores the properties of the physical pea
-ShooterClass.ProjectProperties = table.freeze({
-    ["Peashooter"] = {
-        ["Name"] = "Pea", 
-        ["Color"] = Color3.fromRGB(60, 255, 0),
-        ["Size"] = Vector3.new(5, 5, 5 ),
-        ["Material"] = Enum.Material.Concrete,
-        ["CanCollide"] = true, 
-        ["Anchored"] = true, 
-    }
-}) 
 
 function ShooterClass.new(ShooterPlantStats: {}): Shooter  
     local self = RootPlantsClass.new(ShooterPlantStats) :: Shooter 
@@ -73,6 +63,8 @@ function ShooterClass:FindClosestZombie(): Model
     local ZombiesArray = ZombiesFolder:GetChildren() :: {Model} 
     local ShooterHead = ShooterModel:FindFirstChild("Head") :: UnionOperation 
 
+    self["ClosestTarget"] = nil 
+
     for _, ZombiesModels in ZombiesArray do 
         local ZombieHumanoidRootPart = ZombiesModels:FindFirstChild("HumanoidRootPart") :: Part 
         local ZombieDistance = (ZombieHumanoidRootPart.Position - ShooterHead.Position).Magnitude
@@ -84,39 +76,13 @@ function ShooterClass:FindClosestZombie(): Model
         if ZombieDistance <= ShooterShootRange and ZombieDistance < ClosestDistance then 
             ClosestDistance = ZombieDistance 
             ClosestZombie = ZombiesModels
+            self["ClosestTarget"] = ClosestZombie
         end 
 
     end 
     return ClosestZombie  
 end
 
-function ShooterClass:SetUpPhyisicalProjectileProperties(ProjectilePart: Part) 
-    local self = self :: Shooter 
-    local ShooterName = self["Name"]
-
-    for Properties, Values in ShooterClass.ProjectProperties[ShooterName] do 
-        local PeaPartAsAny = ProjectilePart :: any 
-        
-        if PeaPartAsAny[Properties] == nil then 
-            continue 
-        end
-
-        PeaPartAsAny[Properties] = Values
-    end  
-
-end 
-
-function ShooterClass:CreatePhysicalProjectile() 
-    local self = self :: Shooter 
-    local ShooterName = self["Name"]
-    local Projectile = Instance.new("Part")
-    local ProjectileName = ShooterClass.ProjectProperties[ShooterName]
-
-    Projectile.Name = ProjectileName 
-    ShooterClass.SetUpPhyisicalProjectileProperties(self, Projectile)
-    Debris:AddItem(Projectile, 25)
-
-end 
 
 local OOPAttackRequest = ServerSignals.OOPAttackRequest
 

@@ -83,12 +83,12 @@ CombatUIService.UITypes = table.freeze({
 
         DamageSound:Play()
 
-        warn("IsDamageSoundPlaying?", DamageSound.IsPlaying, DamageSound.Parent)
+        --warn("IsDamageSoundPlaying?", DamageSound.IsPlaying, DamageSound.Parent)
 
         CombatUIService.SetUIPartsProperties(UIPart)
         CombatUIService.SetTextProperties(DamageLabel, Damage)
         
-        warn(BillBoardGui, BillBoardGui.Parent, DamageLabel.Text, "print debug billboardgui")
+        --warn(BillBoardGui, BillBoardGui.Parent, DamageLabel.Text, "print debug billboardgui")
         return BillBoardGui 
     end,
 
