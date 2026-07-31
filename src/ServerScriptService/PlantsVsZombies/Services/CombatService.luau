@@ -20,6 +20,7 @@ local Services = script.Parent
 local PVZFolder = Services.Parent
 local PVZFDataFolder = PVZFolder.PVZData
 
+local ObjectsInCombatModule = require("../PVZData/ObjectsInCombatModule")
 local CombatData = require(PVZFDataFolder.CombatData)
 local CooldownService = require(Services.CooldownService)
 local PVZObjectDataService = require(Services.PVZObjectDataService)
@@ -195,7 +196,7 @@ function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: Att
                 HeartbeatConn:Disconnect()
                 local TargetModel = RayCastResult.Instance:FindFirstAncestorOfClass("Model")
                 
-                warn("RaycastResult found:", RayCastResult.Instance)
+                --warn("RaycastResult found:", RayCastResult.Instance)
                
                 local IsAPlayer = Players:GetPlayerFromCharacter(TargetModel)
 
@@ -205,10 +206,10 @@ function CombatService.SetUpRayCast(OOPObject: Plant & Zombie, AttackStatus: Att
 
                 local ProjectileDamage = AttackStatus["Damage"]
                 local TargetOOPObject = PVZObjectDataService.GetObject(TargetModel) :: Plant | Zombie
-                warn("HGEYY", TargetModel, "Instance:", RayCastResult.Instance)
+                --warn("HGEYY", TargetModel, "Instance:", RayCastResult.Instance)
                 
                 if not TargetOOPObject then
-                    warn(`[CombatService]: not found TargetOOP: {TargetOOPObject}`)
+                    --warn(`[CombatService]: not found TargetOOP: {TargetOOPObject}`)
                     return
                 end
                 
@@ -230,7 +231,7 @@ CombatService.AttackTypesFunctions = {
 
 
 function CombatService.ApplyDamageOnObject(OOPObjectHit: Plant | Zombie, Damage: number, AttackName: string) 
-    print("printing OOPobject that was hit:", OOPObjectHit)
+    --print("printing OOPobject that was hit:", OOPObjectHit)
     OOPObjectHit:TakeDamage(Damage, AttackName)
 end
 
@@ -268,6 +269,23 @@ end]]
 --[[function CombatService.CreateAttackHitbox(OOPObject: Plant & Zombie, AttackType: string)   
    
 end]]
+
+function CombatService.PrepareVisualHitboxCFrame(ObjectModel: Model): CFrame 
+    local ObjectPrimaryPart = ObjectModel.PrimaryPart :: Part? 
+    local ObjectHumanoid = ObjectModel:FindFirstChild("Humanoid") :: Humanoid 
+       
+    if ObjectHumanoid.MoveDirection.Magnitude < 0 then 
+        return ObjectPrimaryPart.CFrame -- this is here incase the zombie is staying still so it just doesnt predict its next movemnt for the client. 
+    end 
+
+    local LatencyCompensation = 0.1
+    local ObjectSpeed = ObjectHumanoid.WalkSpeed 
+    local EndPosition = ObjectPrimaryPart.Position + ObjectPrimaryPart.CFrame.LookVector * ObjectSpeed * LatencyCompensation
+    local EndCFrame = CFrame.new(EndPosition) * ObjectPrimaryPart.CFrame.Rotation
+
+    return EndCFrame 
+
+end 
 
 function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRequest: string, ObjectTarget: Model?)
     --warn("VALIDATION REACHED")
@@ -320,11 +338,11 @@ function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRe
     local ObjectModel = OOPObject["ModelInstance"]
     local ClosestTarget = OOPObject["ClosestTarget"]
 
-    local ClosestTargetCFrame = ClosestTarget.PrimaryPart.CFrame 
+    local ClosestTargetCFrame = CombatService.PrepareVisualHitboxCFrame(ClosestTarget)
     local PrimaryPartCFrame = ObjectModel.PrimaryPart.CFrame
 
     CombatService.AttackTypesFunctions[AttackType](OOPObject, AttackRequestedStatus, ObjectTarget)
-    VisualHitBoxBusEvent.SendVisualHitboxToClient(AttackRequestedName, PrimaryPartCFrame, PrimaryPartCFrame)
+    VisualHitBoxBusEvent.SendVisualHitboxToClient(AttackRequestedName, PrimaryPartCFrame, ClosestTargetCFrame)
 
 end
 

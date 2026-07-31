@@ -47,9 +47,10 @@ local HitboxTweens = VisualHitboxService.HitboxTweens
 VisualHitboxService.HitboxFuncs = {
     
     ["PeashooterShoot"] = function(AttackName: string, HitboxCFrame: CFrame,  EndCFrame: CFrame)
+       -- warn("EndCFrame:", EndCFrame, "HitboxCFrame", HitboxCFrame)
         local PeaPart = Instance.new("Part")
         local PropertiesTable = VisualHitboxesProperties[AttackName]
-        local PeaTweenInfo = TweenInfo.new(1) 
+        local PeaTweenInfo = TweenInfo.new(0.2) 
         
         local PeaTween = HitboxTweens[AttackName](PeaPart, PeaTweenInfo, {CFrame = EndCFrame}) :: Tween
         

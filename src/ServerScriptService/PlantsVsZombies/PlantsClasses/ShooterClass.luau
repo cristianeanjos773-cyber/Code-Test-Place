@@ -117,11 +117,10 @@ function ShooterClass:Initialize()
             end
 
             local ClosestZombie = self:FindClosestZombie() 
-            warn(ClosestZombie)
-            --UpdateShooterAim:FireAllClients(selfModel, ClosestZombie)
 
             if ClosestZombie then
                 self:RequestShootZombie(ClosestZombie)
+                UpdateShooterAim:FireAllClients(selfModel, ClosestZombie)
             end 
 
             task.wait(0.5)

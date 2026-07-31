@@ -85,7 +85,9 @@ function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, S
     end
 
     if not workspace:GetAttribute("WAVESTARTED") then 
-        workspace:SetAttribute("WAVESTARTED", true) 
+        task.delay(6, function()
+            workspace:SetAttribute("WAVESTARTED", true) 
+        end)
     end 
 
     SunPlayerService.ManagePlayerSuns(Player, -SunCost)
