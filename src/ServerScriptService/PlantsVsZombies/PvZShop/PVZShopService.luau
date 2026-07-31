@@ -35,7 +35,9 @@ function PVZShopService.OnPlantRequest()
         local PlayerCoins = DataModuleManager.Profile[Player]["Data"]["Coins"] :: number 
         
         warn(PlayerInventory, PlayerCoins)
+
         if PlayerInventory[PlantRequest] then
+            warn("PLAYER HAS ALREADY THIS   ")
             PurchaseStatusWarner:FireClient(Player, `You Already have {PlantRequest}!`)
             return 
         end

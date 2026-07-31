@@ -64,14 +64,13 @@ function ZombieSpawnService.SpawnRandomZombie()
             local RemainingCooldown = GetRemainingCooldown(GameString, SpawnZombieAction)
 
             if RemainingCooldown > 0 then 
-                print("DDDDDDDD",RemainingCooldown)
                 task.wait(RemainingCooldown)
             end
 
             if not IsCooldownOn(GameString, SpawnZombieAction) then 
                CreateZombieObject(ChosenZombieName) 
                SpawnObject(ChosenZombieName, RandomZombieSpawnPart, ZombieTagString)
-               StartCooldown(GameString, SpawnZombieAction, ZOMBIESPAWNTIME) 
+co               StartCooldown(GameString, SpawnZombieAction, ZOMBIESPAWNTIME) 
             end
 
             task.wait() --[[Why is  a task.wait() here if we have remaining cooldown above? 

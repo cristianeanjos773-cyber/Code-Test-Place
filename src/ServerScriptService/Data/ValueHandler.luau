@@ -16,7 +16,7 @@ local function PutValuesInPlr(plr)
     Coins.Value = DataModuleManager.Profile[plr].Data.Coins
     Coins.Parent = leaderstats
     Suns.Name = "Suns"
-    Suns.Value = DataModuleManager.Profile[plr].Data.Coins
+    Suns.Value = 400 
     Suns.Parent = leaderstats
 
 end
