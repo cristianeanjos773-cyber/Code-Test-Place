@@ -22,6 +22,7 @@ export type RootPlant = typeof(setmetatable({} :: {
     ["Name"]: string, 
     ["SunPrice"]: number,
     ["ZombieHumanoid"]: Humanoid,
+    ["SpawnPart"]: Part, 
     ["IsAliveBool"]: boolean,  
     ["IsAlive"]: () -> (boolean),
     ["TakeDamage"]: (Damage: number) -> (),
@@ -71,7 +72,6 @@ function PlantsClass:TakeDamage(Damage: number)
     local FinalSelfHP = PlantHP - FinalDamageResult
     
     self["HP"] = FinalSelfHP
-    warn("ROOTS PLANTS DAMAGE DEBUG", self["HP"])
 
     HPBarUpdater:FireAllClients(PlantModel, PlantHP, PlantMaxHP)
 
@@ -84,8 +84,19 @@ end
 
 function PlantsClass:PlantDie() 
     local self = self :: RootPlant
+    local PlantSpawnPart = self["SpawnPart"]
+
+    warn("SPAWNPART", PlantSpawnPart, PlantSpawnPart:GetAttribute("Occupied"))
+
     self["IsAliveBool"]= false 
+
+    if PlantSpawnPart:GetAttribute("Occupied") then 
+        PlantSpawnPart:SetAttribute("Occupied", false)
+        warn("SET TO FALSE???", PlantSpawnPart:GetAttribute("Occupied"))
+    end 
+
     OOPObjectDied:Fire(self)
+
 end 
 
 function PlantsClass:HealPlant(HealAmount: number) 

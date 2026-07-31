@@ -88,7 +88,7 @@ function PVZObjectDataService.DisconnectOOP(OOPObjectKey: Plant | Zombie)
 
 end 
 
-function PVZObjectDataService.ConnectModelToOOP(OOPObjectModel: Model, ObjectOOPRequest: string) 
+function PVZObjectDataService.ConnectModelToOOP(OOPObjectModel: Model, ObjectOOPRequest: string): Plant | Zombie 
 
     if not OOPObjectModel:HasTag("Plant") and not OOPObjectModel:HasTag("Zombie") then
         return
@@ -115,6 +115,8 @@ function PVZObjectDataService.ConnectModelToOOP(OOPObjectModel: Model, ObjectOOP
     task.spawn(function()
        OOPObject:Initialize() 
     end)
+
+    return OOPObject
 
 end 
 

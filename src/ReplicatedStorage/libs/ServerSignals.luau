@@ -6,6 +6,7 @@ local ServerSignals = {
     OOPObjectDied = GoodSignal.new(), 
     OOPAttackRequest = GoodSignal.new(),
     OOPObjectKilledAnotherOOP = GoodSignal.new(),  
+    OOPSpawned = GoodSignal.new(),
 }
 
 return ServerSignals 

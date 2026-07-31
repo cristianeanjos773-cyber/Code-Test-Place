@@ -2,6 +2,9 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local SSSFolder = ServerScriptService.ServerScriptService
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ReplicatedStorageFolder = ReplicatedStorage.ReplicatedStorage
+
 
 local PVZFolder = SSSFolder.PlantsVsZombies
 local PVZDataFolder = PVZFolder.PVZData
@@ -10,6 +13,8 @@ local PlantsDataModule = require(PVZDataFolder.PlantsData)
 local ZombiesDataModule = require(PVZDataFolder.ZombiesData)
 local PVZObjectService = require(PVZFolder.Services.PVZObjectDataService)
 local ObjectDataService = require(PVZFolder.Services.PVZObjectDataService) 
+
+local ServerSignals = require(ReplicatedStorageFolder.libs.ServerSignals)
 local PlantsVsZombiesFolder = workspace:FindFirstChild("PlantsVsZombies") :: Folder
 
 local PlantsFolder = PlantsVsZombiesFolder:FindFirstChild("PlantsFolder") 
@@ -81,7 +86,7 @@ end
 
 
 function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagString: string): Model | nil 
-    
+   
     if not ObjectRequested or typeof(ObjectRequested) ~= "string" then
         warn(`[SpawnService]: Err in ObjectRequestedParam: {ObjectRequested} \n Type of ObjectRequested: {typeof(ObjectRequested)}`) 
         return 
@@ -124,7 +129,11 @@ function SpawnService.SpawnObject(ObjectRequested: string, SpawnPart: Part, TagS
         return
     end
 
-    ConnectModelToOOP(CloneModule, ObjectRequested)
+    local OOPObject = ConnectModelToOOP(CloneModule, ObjectRequested)
+
+    OOPObject["SpawnPart"] = SpawnPart
+    warn(OOPObject["SpawnPart"], "THATS THE KEY BEING ADDED TO THE OOP")
+
     return CloneModule  
 
 end 

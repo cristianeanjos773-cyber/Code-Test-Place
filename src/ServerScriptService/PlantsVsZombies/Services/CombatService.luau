@@ -335,14 +335,16 @@ function CombatService.ValidateAttackRequest(OOPObject: Plant & Zombie, AttackRe
     StartCooldown(OOPObject, AttackRequestedName, AttackCooldown)
     --warn(AttackType, CombatService.AttackTypesFunctions["Melee"])
 
-    local ObjectModel = OOPObject["ModelInstance"]
-    local ClosestTarget = OOPObject["ClosestTarget"]
-
-    local ClosestTargetCFrame = CombatService.PrepareVisualHitboxCFrame(ClosestTarget)
-    local PrimaryPartCFrame = ObjectModel.PrimaryPart.CFrame
 
     CombatService.AttackTypesFunctions[AttackType](OOPObject, AttackRequestedStatus, ObjectTarget)
-    VisualHitBoxBusEvent.SendVisualHitboxToClient(AttackRequestedName, PrimaryPartCFrame, ClosestTargetCFrame)
+
+    if CombatData.PlantsAttacks.Peashooter[AttackRequest] ~= nil then
+        local ObjectModel = OOPObject["ModelInstance"]
+        local ClosestTarget = OOPObject["ClosestTarget"]
+        local PrimaryPartCFrame = ObjectModel.PrimaryPart.CFrame
+        local ClosestTargetCFrame = CombatService.PrepareVisualHitboxCFrame(ClosestTarget)
+        VisualHitBoxBusEvent.SendVisualHitboxToClient(AttackRequestedName, PrimaryPartCFrame, ClosestTargetCFrame)
+    end
 
 end
 

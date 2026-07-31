@@ -64,25 +64,26 @@ function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, S
 
     if CheckClass == "Shooter" and SpawnPartFolderName == "NonShooterSpawns" then 
         SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
-        warn("FIRST COND")
         return 
     end 
 
     if CheckClass ~= "Shooter" and SpawnPartFolderName == "ShootersSpawn" then 
         SpawnFailedWarning:FireClient(Player, {["Text"] = FailString, ["Color"] = Color3.fromRGB(255, 0, 0)})
-        warn("SECOND COND")
         return 
     end 
 
     if IsCooldownOn then 
         SpawnFailedWarning:FireClient(Player, {["Text"] = CooldownFaileString, ["Color"] = Color3.fromRGB(255, 0, 0)})
-        warn("FAILED BECAUSE PLAYER IS ON COOLDOWN")
         return
     end
    
     if not HasEnoughSuns then
         return
     end
+
+    if SpawnPart:GetAttribute("Occupied") then
+        return
+    end 
 
     if not workspace:GetAttribute("WAVESTARTED") then 
         task.delay(6, function()
@@ -94,6 +95,8 @@ function GameplayMainModule.SpawnPlant(Player: Player, PlantRequested: string, S
     CooldownService.StartCooldown(Player, PlantRequested, PlantCooldown)
     SpawnService.SpawnObject(PlantRequested, SpawnPart, PlantString)
     GameplayMainModule.SpawnZombies()
+    SpawnPart:SetAttribute("Occupied", true)
+    
 
 end
 
